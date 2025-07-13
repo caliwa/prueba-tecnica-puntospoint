@@ -17,7 +17,12 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
+  user: <%= Rails.application.credentials.dig(:database, :user) %>
+  password: <%= Rails.application.credentials.dig(:database, :password) %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV.fetch("PGHOST", "localhost") %>
+  port: <%= ENV.fetch("PGPORT", 5432) %>
+
 
 
 development:
@@ -57,7 +62,6 @@ development:
 test:
   <<: *default
   database: puntospoint_test
-
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
 # ever seen by anyone, they now have access to your database.
@@ -81,5 +85,3 @@ test:
 production:
   <<: *default
   database: puntospoint_production
-  username: puntospoint
-  password: <%= ENV["PUNTOSPOINT_DATABASE_PASSWORD"] %>
