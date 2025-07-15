@@ -60,4 +60,22 @@ end
 gem "devise", "~> 4.9"
 gem "devise-jwt"
 gem "jsonapi-serializer"
-gem 'rails-i18n'
+gem "rails-i18n"
+
+# Gemfile
+gem "ostruct" # para ignorar aviso ruby 3.5.0
+
+gem "rswag-api"
+gem "rswag-ui"
+gem "rspec-rails"
+
+group :development, :test do
+  gem "rspec-rails"
+  gem "rswag-specs"
+end
+
+gem "rails-observers"
+gem "kaminari"
+
+
+gem "sidekiq", "~> 8.0"

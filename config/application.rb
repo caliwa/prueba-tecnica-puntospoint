@@ -21,6 +21,7 @@ module Puntospoint
     #
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
+    config.active_record.observers = :category_observer, :customer_observer, :product_observer, :purchase_item_observer
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")

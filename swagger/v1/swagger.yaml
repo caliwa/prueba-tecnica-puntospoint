@@ -1,0 +1,45 @@
+---
+openapi: 3.1.0
+info:
+  title: Puntospoint API E-Commerce
+  version: v1
+  description: "Documentación de la API para el sistema E-Commerce de Puntospoint.
+    \U0001F6D2"
+paths: {}
+servers:
+- url: http://{defaultHost}
+  variables:
+    defaultHost:
+      default: localhost:3000
+components:
+  schemas:
+    user_response:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          example: user@example.com
+        type:
+          type: string
+          example: Customer
+          description: Puede ser Customer o Admin
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - email
+      - type
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Token de autorización JWT. Incluir "Bearer " antes del token.
+        Ejemplo: "Bearer eyJhbGciOiJIUzI1NiJ9..."'
