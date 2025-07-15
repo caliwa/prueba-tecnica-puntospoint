@@ -1,5 +1,4 @@
 class AuditEvent < ApplicationRecord
-
   belongs_to :auditable, polymorphic: true
 
   belongs_to :user, optional: true

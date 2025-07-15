@@ -19,6 +19,5 @@ class ReportPurchaseJob
     puts "Creador del producto: #{creator_email} (ID: #{creator.id})"
     puts "TAREA: Enviar un email de notificación a #{creator_email}."
     puts "--- REPORTE FINALIZADO ---"
-
   end
 end

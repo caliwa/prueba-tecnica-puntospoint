@@ -1,7 +1,6 @@
 class CreateAuditEvents < ActiveRecord::Migration[7.2]
   def change
     create_table :audit_events do |t|
-
       t.references :auditable, polymorphic: true, null: false
 
       t.string :event_type
