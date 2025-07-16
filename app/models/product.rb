@@ -1,12 +1,18 @@
 class Product < ApplicationRecord
   belongs_to :creator, class_name: "User", foreign_key: "created_by_user_id"
 
-  has_many :audit_events, as: :auditable, dependent: :destroy
+  # Relación con Categorías (vía polimórfica)
   has_many :categorizations, as: :categorizable, dependent: :destroy
   has_many :categories, through: :categorizations
 
+  # Relación con Imágenes (vía polimórfica)
+  has_many :images, as: :imageable, dependent: :destroy
+
+  # Un producto puede ser un "purchasable" en muchos items de compra.
   has_many :purchase_items, as: :purchasable, dependent: :destroy
-  has_many :purchases, through: :purchase_items
+  # Un producto puede ser un "imageable" y tener muchas imágenes.
+  has_many :images, as: :imageable, dependent: :destroy
+
 
   validates :name, presence: true
   validates :price, presence: true, numericality: { greater_than: 0 }

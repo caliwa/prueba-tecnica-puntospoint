@@ -141,8 +141,8 @@ puts "Productos creados: #{Product.count}"
 
 puts "Creando imágenes..."
 Image.create!(imageable: product1, image_url: "http://example.com/images/smartphone_x.jpg", description: "Vista frontal del Smartphone X", upload_date: DateTime.now - 1.month)
+Image.create!(imageable: product1, image_url: "http://example.com/images/smartphone_n.jpg", description: "Vista trasera del Smartphone N", upload_date: DateTime.now - 1.month)
 Image.create!(imageable: product2, image_url: "http://example.com/images/auriculares_bt.jpg", description: "Auriculares con estuche de carga", upload_date: DateTime.now - 2.months)
-Image.create!(imageable: customer1, image_url: "http://example.com/images/juan_perez_profile.jpg", description: "Foto de perfil de Juan Pérez", upload_date: DateTime.now - 3.months)
 Image.create!(imageable: product6, image_url: "http://example.com/images/laptop_ultraligera.jpg", description: "Laptop con pantalla encendida", upload_date: DateTime.now - 1.week)
 puts "Imágenes creadas: #{Image.count}"
 

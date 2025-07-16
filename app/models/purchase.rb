@@ -1,6 +1,8 @@
 class Purchase < ApplicationRecord
   belongs_to :customer
   has_many :purchase_items, dependent: :destroy
+
+  # Clave: Permite hacer `joins(:products)` para filtrar.
   has_many :products, through: :purchase_items, source: :purchasable, source_type: "Product"
 
   validates :purchase_date, presence: true

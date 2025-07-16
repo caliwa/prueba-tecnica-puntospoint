@@ -1,11 +1,503 @@
 ---
-openapi: 3.1.0
+openapi: 3.0.1
 info:
-  title: Puntospoint API E-Commerce
+  title: API V1
   version: v1
-  description: "Documentación de la API para el sistema E-Commerce de Puntospoint.
-    \U0001F6D2"
-paths: {}
+paths:
+  "/api/v1/analytics/most_purchased_products_by_category":
+    get:
+      summary: Productos más comprados por categoría
+      tags:
+      - Analytics
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Un objeto donde cada clave es el nombre de una categoría.
+                additionalProperties:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 101
+                    name:
+                      type: string
+                      example: Producto X
+                    total_quantity_sold:
+                      type: integer
+                      example: 150
+                example:
+                  Categoría A:
+                    id: 101
+                    name: Producto X
+                    total_quantity_sold: 150
+                  Categoría B:
+                    id: 205
+                    name: Producto Y
+                    total_quantity_sold: 98
+        '401':
+          description: unauthorized
+  "/api/v1/analytics/top_revenue_products_by_category":
+    get:
+      summary: Top 3 productos con más ingresos por categoría
+      tags:
+      - Analytics
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Un objeto donde cada clave es el nombre de una categoría
+                  y el valor es un array con los 3 productos top.
+                additionalProperties:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 102
+                      name:
+                        type: string
+                        example: Producto Z
+                      total_revenue:
+                        type: number
+                        format: float
+                        example: 1500.5
+                example:
+                  Categoría A:
+                  - id: 102
+                    name: Producto Z
+                    total_revenue: 1500.5
+                  - id: 105
+                    name: Producto W
+                    total_revenue: 1200.0
+                  - id: 101
+                    name: Producto X
+                    total_revenue: 950.75
+        '401':
+          description: unauthorized
+  "/api/v1/analytics/purchases_list":
+    get:
+      summary: Listado de compras con filtros
+      tags:
+      - Analytics
+      security:
+      - Bearer: []
+      parameters:
+      - name: purchase_date_from
+        in: query
+        format: date
+        description: Fecha de inicio (YYYY-MM-DD)
+        required: false
+        schema:
+          type: string
+      - name: purchase_date_to
+        in: query
+        format: date
+        description: Fecha de fin (YYYY-MM-DD)
+        required: false
+        schema:
+          type: string
+      - name: category_id
+        in: query
+        description: ID de la categoría para filtrar productos.
+        required: false
+        schema:
+          type: integer
+      - name: customer_id
+        in: query
+        description: ID del cliente (Customer).
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    customer_name:
+                      type: string
+                    purchase_date:
+                      type: string
+                      format: date
+                    total:
+                      type: number
+                      format: float
+                    status:
+                      type: string
+                    payment_method:
+                      type: string
+                    shipping_address:
+                      type: string
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          product_name:
+                            type: string
+                          quantity:
+                            type: integer
+                          unit_price:
+                            type: number
+                            format: float
+                          total_price:
+                            type: number
+                            format: float
+                          discount_amount:
+                            type: number
+                            format: float
+                          tax_amount:
+                            type: number
+                            format: float
+        '401':
+          description: unauthorized
+  "/api/v1/analytics/purchase_counts_by_granularity":
+    get:
+      summary: Conteo de compras agrupadas por tiempo
+      tags:
+      - Analytics
+      security:
+      - Bearer: []
+      parameters:
+      - name: granularity
+        in: query
+        enum:
+        - hour
+        - day
+        - week
+        - month
+        - year
+        description: "Nivel de agrupación de tiempo.:\n * `hour` \n * `day` \n * `week`
+          \n * `month` \n * `year` \n "
+        required: true
+        schema:
+          type: string
+      - name: purchase_date_from
+        in: query
+        format: date
+        description: Fecha de inicio (YYYY-MM-DD)
+        required: false
+        schema:
+          type: string
+      - name: purchase_date_to
+        in: query
+        format: date
+        description: Fecha de fin (YYYY-MM-DD)
+        required: false
+        schema:
+          type: string
+      - name: category_id
+        in: query
+        description: ID de la categoría para filtrar productos.
+        required: false
+        schema:
+          type: integer
+      - name: customer_id
+        in: query
+        description: ID del cliente (Customer).
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Un objeto donde cada clave es el período de tiempo formateado
+                  y el valor es el conteo de compras.
+                additionalProperties:
+                  type: integer
+                example:
+                  '2025-07-14': 22
+                  '2025-07-15': 15
+        '400':
+          description: bad_request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: unauthorized
+  "/api/v1/user/current_user":
+    get:
+      summary: Obtener datos del usuario autenticado
+      tags:
+      - User
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  email:
+                    type: string
+                    example: user@example.com
+                  type:
+                    type: string
+                    example: Customer
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                required:
+                - id
+                - email
+                - type
+        '401':
+          description: unauthorized
+  "/users":
+    post:
+      summary: Crear una nueva cuenta de usuario
+      tags:
+      - Authentication
+      description: Registro de nuevo usuario. Acepta Customer o Admin como tipo.
+      parameters: []
+      responses:
+        '200':
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 200
+                      message:
+                        type: string
+                        example: Autenticado y creado correctamente
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      email:
+                        type: string
+                        example: user@example.com
+                      type:
+                        type: string
+                        example: Customer
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+        '422':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 422
+                      message:
+                        type: string
+                        example: El usuario no pudo ser creado.
+        '429':
+          description: Demasiadas peticiones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Demasiadas peticiones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: user@example.com
+                    password:
+                      type: string
+                      example: password123
+                    password_confirmation:
+                      type: string
+                      example: password123
+                      x-nullable: true
+                    type:
+                      type: string
+                      example: Customer
+                      x-nullable: true
+                      description: Puede ser Customer o Admin
+                  required:
+                  - email
+                  - password
+              required:
+              - user
+  "/users/sign_in":
+    post:
+      summary: Iniciar sesión de usuario
+      tags:
+      - Authentication
+      description: Autenticación de usuario con email y password. Retorna un token
+        JWT en el header Authorization.
+      parameters: []
+      responses:
+        '200':
+          description: Login exitoso
+          headers:
+            Authorization:
+              type: string
+              description: Bearer token JWT para autenticación en futuras peticiones.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 200
+                      message:
+                        type: string
+                        example: Logueado exitosamente
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      email:
+                        type: string
+                        example: user@example.com
+                      type:
+                        type: string
+                        example: Customer
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+        '401':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid Email or password.
+        '429':
+          description: Demasiadas peticiones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Demasiadas peticiones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: admin@example.com
+                    password:
+                      type: string
+                      example: password123
+                  required:
+                  - email
+                  - password
+              required:
+              - user
+  "/users/sign_out":
+    delete:
+      summary: Cerrar sesión de usuario
+      tags:
+      - Authentication
+      description: Cierra la sesión del usuario actual. Requiere token JWT válido.
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: Logout exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Deslogueado exitosamente
+        '401':
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: No se pudo encontrar una sesión activa.
 servers:
 - url: http://{defaultHost}
   variables:
@@ -18,14 +510,10 @@ components:
       properties:
         id:
           type: integer
-          example: 1
         email:
           type: string
-          example: user@example.com
         type:
           type: string
-          example: Customer
-          description: Puede ser Customer o Admin
         created_at:
           type: string
           format: date-time
@@ -36,10 +524,51 @@ components:
       - id
       - email
       - type
+    user_signup_payload:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            email:
+              type: string
+              example: user@example.com
+            password:
+              type: string
+              example: password123
+            password_confirmation:
+              type: string
+              example: password123
+            type:
+              type: string
+              example: Customer
+              description: Puede ser Customer o Admin
+          required:
+          - email
+          - password
+          - password_confirmation
+      required:
+      - user
+    user_login_payload:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            email:
+              type: string
+              example: admin@example.com
+            password:
+              type: string
+              example: password123
+          required:
+          - email
+          - password
+      required:
+      - user
   securitySchemes:
-    Bearer:
+    bearer_auth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: 'Token de autorización JWT. Incluir "Bearer " antes del token.
-        Ejemplo: "Bearer eyJhbGciOiJIUzI1NiJ9..."'
+      description: 'Ingresa el token JWT con el prefijo Bearer. Ejemplo: "Bearer {tu_token}"'

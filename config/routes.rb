@@ -1,12 +1,10 @@
 # require "sidekiq/web"
 Rails.application.routes.draw do
+  mount Rswag::Ui::Engine => '/api-docs'
+  mount Rswag::Api::Engine => '/api-docs'
   # authenticate :user, lambda { current_user.is_a?(Admin) } do
   #   mount Sidekiq::Web  => "/sidekiq"
-  # end
-  mount Rswag::Ui::Engine => "/api-docs"
-  mount Rswag::Api::Engine => "/api-docs"
-
-
+  # 
   devise_for :users, path: "", path_names: {
     sign_in: "login",
     sign_out: "logout",

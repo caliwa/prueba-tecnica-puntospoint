@@ -7,7 +7,7 @@ RSpec.describe 'API V1 Analytics', type: :request do
   path '/api/v1/analytics/most_purchased_products_by_category' do
     get('Productos más comprados por categoría') do
       tags 'Analytics'
-      summary 'Obtiene el producto más vendido (por cantidad) para cada categoría.'
+      # summary 'Obtiene el producto más vendido (por cantidad) para cada categoría.'
       produces 'application/json'
       security [ Bearer: [] ]
 
@@ -39,7 +39,7 @@ RSpec.describe 'API V1 Analytics', type: :request do
   path '/api/v1/analytics/top_revenue_products_by_category' do
     get('Top 3 productos con más ingresos por categoría') do
       tags 'Analytics'
-      summary 'Obtiene los 3 productos que más han recaudado ($) por cada categoría.'
+      # summary 'Obtiene los 3 productos que más han recaudado ($) por cada categoría.'
       produces 'application/json'
       security [ Bearer: [] ]
 
@@ -76,7 +76,7 @@ RSpec.describe 'API V1 Analytics', type: :request do
   path '/api/v1/analytics/purchases_list' do
     get('Listado de compras con filtros') do
       tags 'Analytics'
-      summary 'Obtiene un listado de compras aplicando filtros opcionales.'
+      # summary 'Obtiene un listado de compras aplicando filtros opcionales.'
       produces 'application/json'
       security [ Bearer: [] ]
 
@@ -126,7 +126,7 @@ RSpec.describe 'API V1 Analytics', type: :request do
   path '/api/v1/analytics/purchase_counts_by_granularity' do
     get('Conteo de compras agrupadas por tiempo') do
       tags 'Analytics'
-      summary 'Obtiene la cantidad de compras agrupadas por hora, día, semana, mes o año.'
+      # summary 'Obtiene la cantidad de compras agrupadas por hora, día, semana, mes o año.'
       produces 'application/json'
       security [ Bearer: [] ]
 

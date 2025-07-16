@@ -72,45 +72,76 @@ class Api::V1::AnalyticsController < ApplicationController
   end
 
 
-  # c. Obtener listado de compras según parámetros
-  def purchases_list
-    # ESTE MÉTODO YA ES ÓPTIMO Y USA LAS MEJORES PRÁCTICAS DEL ORM.
-    # `preload` es la herramienta perfecta aquí para evitar N+1 en asociaciones polimórficas.
-    purchases = Purchase.preload(:customer, purchase_items: :purchasable)
+# app/controllers/api/v1/analytics_controller.rb
+def purchases_list
+  # --- PASO 1: CONSTRUIR LA CONSULTA PARA ENCONTRAR LOS IDs ---
+  # Construimos una consulta con todos los joins necesarios solo para filtrar.
+  # No nos preocupamos por cargar datos aquí, solo por encontrar las compras correctas.
+  purchases_query = Purchase.distinct
 
-    # ... filtros (sin cambios) ...
-    if params[:purchase_date_from].present?
-      purchases = purchases.where("purchase_date >= ?", params[:purchase_date_from])
-    end
-    if params[:purchase_date_to].present?
-      purchases = purchases.where("purchase_date <= ?", params[:purchase_date_to])
-    end
-    if params[:customer_id].present?
-      purchases = purchases.where(customer_id: params[:customer_id])
-    end
-    if params[:category_id].present?
-      purchases = purchases.joins(products: :categories)
-                           .where(categories: { id: params[:category_id] }).distinct
-    end
-
-    # ... renderizado del JSON (sin cambios) ...
-    render json: purchases.map { |purchase|
-      {
-        id: purchase.id,
-        customer_name: purchase.customer.full_name,
-        purchase_date: purchase.purchase_date,
-        total: purchase.total.to_f,
-        status: purchase.status,
-        items: purchase.purchase_items.map do |item|
-          {
-            product_name: item.purchasable&.name,
-            quantity: item.quantity,
-            total_price: item.total_price.to_f
-          }
-        end
-      }
-    }, status: :ok
+  # Filtro por Categoría
+  if params[:category_id].present?
+    purchases_query = purchases_query.joins(products: :categories)
+                                     .where(categories: { id: params[:category_id] })
   end
+
+  # Filtro por Administrador
+  if params[:admin_id].present?
+    purchases_query = purchases_query.joins(:products)
+                                     .where(products: { created_by_user_id: params[:admin_id] })
+  end
+
+  # Filtros directos
+  if params[:purchase_date_from].present?
+    purchases_query = purchases_query.where("purchases.purchase_date >= ?", params[:purchase_date_from])
+  end
+  if params[:purchase_date_to].present?
+    purchases_query = purchases_query.where("purchases.purchase_date <= ?", params[:purchase_date_to])
+  end
+  if params[:customer_id].present?
+    purchases_query = purchases_query.where(customer_id: params[:customer_id])
+  end
+
+  # --- PASO 2: EJECUTAR LA CONSULTA Y LUEGO CARGAR LOS DATOS ---
+  # Ejecuta la consulta compleja para obtener solo los IDs.
+  purchase_ids = purchases_query.pluck(:id)
+
+  if purchase_ids.empty?
+    render json: [], status: :ok
+    return
+  end
+  
+  # Inicia una consulta NUEVA y LIMPIA, sin joins, usando los IDs.
+  # El .preload aquí funcionará perfectamente porque no hay conflictos.
+  final_purchases = Purchase.where(id: purchase_ids)
+                            .preload(:customer, purchase_items: { product: :images })
+                            .order(purchase_date: :desc)
+
+  # --- PASO 3: CONSTRUIR EL JSON (AHORA SÍ, SIN N+1) ---
+  render json: final_purchases.map { |purchase|
+    {
+      id: purchase.id,
+      customer_name: purchase.customer&.full_name,
+      purchase_date: purchase.purchase_date,
+      # total: purchase.total_amount.to_f, # Corregido según tu schema anterior
+      status: purchase.status,
+      items: purchase.purchase_items.map do |item|
+        next if item.product.nil?
+        {
+          product_name: item.product.name,
+          quantity: item.quantity,
+          total_price: item.total_price.to_f,
+          images: item.product.images.map(&:image_url)
+        }
+      end.compact
+    }
+  }, status: :ok
+end
+
+
+
+
+
 
 
   # d. Obtener cantidad de compras según granularidad
@@ -186,3 +217,4 @@ class Api::V1::AnalyticsController < ApplicationController
     render json: formatted_result, status: :ok
   end
 end
+

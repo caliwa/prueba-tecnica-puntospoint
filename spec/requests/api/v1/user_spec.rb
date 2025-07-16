@@ -5,7 +5,7 @@ RSpec.describe 'API V1 User', type: :request do
   path '/api/v1/user/current_user' do
     get('Obtener datos del usuario autenticado') do
       tags 'User'
-      summary 'Devuelve la información del usuario que realiza la petición.'
+      # summary 'Devuelve la información del usuario que realiza la petición.'
       produces 'application/json'
       security [ Bearer: [] ]
 
