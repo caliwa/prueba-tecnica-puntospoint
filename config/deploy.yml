@@ -54,10 +54,10 @@ env:
     POSTGRES_USER: 'puntospoint_app'
     POSTGRES_DB: 'puntospoint_app_production'
     POSTGRES_HOST: 'puntospoint_app-db'
-    REDIS_URL: 'redis://puntospoint-redis:6379/0'
+    REDIS_URL: REDIS_URL
   secret:
     - RAILS_MASTER_KEY
-    - POSTGRES_PASSWORD
+    - DB_PASSWORD
 # env:
 #   clear:
 #     DB_HOST: 192.168.0.2
