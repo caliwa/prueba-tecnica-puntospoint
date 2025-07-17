@@ -64,10 +64,10 @@ gem "rails-i18n"
 
 # Gemfile
 gem "rspec-rails"
+gem "rswag"
 
 group :development, :test do
   gem "rspec-rails"
-  gem "rswag"
   gem 'solargraph-rails'
 end
 
