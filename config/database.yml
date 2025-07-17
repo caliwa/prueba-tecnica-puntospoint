@@ -82,4 +82,5 @@ production:
   <<: *default
   database: puntospoint_production
   username: puntospoint
-  password: <%= ENV["PUNTOSPOINT_DATABASE_PASSWORD"] %>
+  database: <%= ENV["POSTGRES_DB"] %>
+  host: <%= ENV["POSTGRES_HOST"] %>
