@@ -95,7 +95,8 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  config.cache_store = :redis_cache_store, { url: ENV.fetch('REDIS_URL', 'redis://puntospoint-redis:6379/0') }
+  config.cache_store = :redis_cache_store, { url: ENV.fetch('REDIS_URL') }
+
 
 
   # Enable DNS rebinding protection and other `Host` header attacks.
