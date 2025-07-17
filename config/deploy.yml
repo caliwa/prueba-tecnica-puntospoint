@@ -43,10 +43,10 @@ env:
     # Redis configuration
     REDIS_HOST: 206.189.226.103
     REDIS_PORT: 6379
+    REDIS_URL: 'redis://my_awesome_app-redis:6379/0'
   secret:
     - RAILS_MASTER_KEY
     - DB_PASSWORD
-    - REDIS_URL
 
 # Use a persistent storage volume.
 volumes:
