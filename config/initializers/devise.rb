@@ -311,50 +311,50 @@ Devise.setup do |config|
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
 
-  # config.warden do |manager|
-  #   manager.scope_defaults :user, store: false
+  config.warden do |manager|
+    manager.scope_defaults :user, store: false
 
-  #   manager.failure_app = Proc.new do |env|
-  #     warden_message = env["warden.options"]&.dig(:message) || :unauthenticated
+    manager.failure_app = Proc.new do |env|
+      warden_message = env["warden.options"]&.dig(:message) || :unauthenticated
 
-  #     status_code = case warden_message
-  #     when :unauthenticated then 401
-  #     when :invalid then 401
-  #     when :timeout then 440
-  #     else 401
-  #     end
+      status_code = case warden_message
+      when :unauthenticated then 401
+      when :invalid then 401
+      when :timeout then 440
+      else 401
+      end
 
-  #       message = case warden_message
-  #       when :unauthenticated then "Usuario no autenticado"
-  #       when :invalid then "Credenciales inválidas"
-  #       when :timeout then "Sesión expirada"
-  #       else "Acceso no autorizado"
-  #       end
+        message = case warden_message
+        when :unauthenticated then "Usuario no autenticado"
+        when :invalid then "Credenciales inválidas"
+        when :timeout then "Sesión expirada"
+        else "Acceso no autorizado"
+        end
 
-  #     response_body = {
-  #       status: {
-  #         code: status_code,
-  #         message: message
-  #       },
-  #       error_type: warden_message.to_s
-  #     }.to_json
+      response_body = {
+        status: {
+          code: status_code,
+          message: message
+        },
+        error_type: warden_message.to_s
+      }.to_json
 
-  #     [ status_code, { "Content-Type" => "application/json" }, [ response_body ] ]
-  #   end
-  # end
+      [ status_code, { "Content-Type" => "application/json" }, [ response_body ] ]
+    end
+  end
 
-  # config.jwt do |jwt|
-  #   jwt.secret = ENV["RAILS_SECRET_KEY_BASE"] || 
-  #           (Rails.application.credentials[:secret_key_base] if Rails.application.credentials.secret_key_base?) ||
-  #           Rails.application.secret_key_base ||
-  #           ENV['SECRET_KEY_BASE'] ||
-  #           'fallback_secret_for_asset_precompilation'
-  #   jwt.dispatch_requests = [
-  #     ['POST', %r{^/login$}]
-  #   ]
-  #   jwt.revocation_requests = [
-  #     ['DELETE', %r{^/logout$}]
-  #   ]
-  #   jwt.expiration_time = 30.minutes.to_i
-  # end
+  config.jwt do |jwt|
+    jwt.secret = ENV["RAILS_SECRET_KEY_BASE"] || 
+            (Rails.application.credentials[:secret_key_base] if Rails.application.credentials.secret_key_base?) ||
+            Rails.application.secret_key_base ||
+            ENV['SECRET_KEY_BASE'] ||
+            'fallback_secret_for_asset_precompilation'
+    jwt.dispatch_requests = [
+      ['POST', %r{^/login$}]
+    ]
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/logout$}]
+    ]
+    jwt.expiration_time = 30.minutes.to_i
+  end
 end
