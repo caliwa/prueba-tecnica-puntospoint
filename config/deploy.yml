@@ -84,8 +84,8 @@ accessories:
     host: 206.189.226.103
     env:
       clear:
-        POSTGRES_USER: 'my_awesome_app'
-        POSTGRES_DB: 'my_awesome_app_production'
+        POSTGRES_USER: 'puntospoint'
+        POSTGRES_DB: 'puntospoint_production'
       secret:
         - POSTGRES_PASSWORD
     directories:
