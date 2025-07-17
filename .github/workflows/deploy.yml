@@ -29,20 +29,6 @@ jobs:
       - name: Expose GitHub Runtime for cache
         uses: crazy-max/ghaction-github-runtime@v3
 
-      - name: Install and Login to LastPass CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get --no-install-recommends -yqq install \
-            bash-completion build-essential cmake libcurl4 libcurl4-openssl-dev \
-            libssl-dev libxml2 libxml2-dev pkg-config ca-certificates xclip
-
-          wget https://download.cloud.lastpass.com/linux/lplinux.tar.bz2
-          tar xjf lplinux.tar.bz2
-          
-          sudo ./install_lastpass.sh
-          
-          echo "${{ secrets.LASTPASS_MASTER_PASSWORD }}" | lpass login --trust ${{ secrets.LASTPASS_USER }}
-
       - name: Install Kamal
         run: gem install kamal
 
