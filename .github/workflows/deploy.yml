@@ -35,6 +35,7 @@ jobs:
 
       - name: Set up SSH
         run: |
+          set -e
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
@@ -42,7 +43,7 @@ jobs:
           ssh-add ~/.ssh/id_rsa
           ssh-keyscan 206.189.226.103 >> ~/.ssh/known_hosts
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSHKEY }}
 
       - name: Deploy with Kamal
         run: bin/kamal deploy
