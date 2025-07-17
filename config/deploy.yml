@@ -7,7 +7,10 @@ image: caliwa/puntospoint
 # Deploy to these servers.
 servers:
   web:
-    - 206.189.226.103
+    hosts:
+      - 206.189.226.103
+    options:
+      network: 'private' # <-- ¡AÑADE ESTO!
   
   job:
     hosts:
@@ -34,19 +37,21 @@ builder:
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   clear:
+    RAILS_ENV: production
+    RACK_ENV: production
+    RAILS_LOG_TO_STDOUT: true
     RAILS_SERVE_STATIC_FILES: true
     # Database configuration para Rails
-    DB_HOST: 206.189.226.103
-    DB_PORT: 5432
-    DB_NAME: puntospoint_production
-    DB_USER: puntospoint
+    POSTGRES_HOST: 'puntospoint-db'  # Cambio crítico: usar el nombre del contenedor
+    POSTGRES_PORT: '5432'
+    POSTGRES_DB: 'puntospoint_production'
+    POSTGRES_USER: 'puntospoint'
     # Redis configuration
-    REDIS_HOST: 206.189.226.103
     REDIS_PORT: 6379
-    REDIS_URL: 'redis://my_awesome_app-redis:6379/0'
+    REDIS_URL: 'redis://puntospoint-redis:6379/0'
   secret:
     - RAILS_MASTER_KEY
-    - DB_PASSWORD
+    - POSTGRES_PASSWORD
 
 # Use a persistent storage volume.
 volumes:
@@ -57,7 +62,6 @@ accessories:
   db:
     image: postgres:16
     host: 206.189.226.103
-    port: 5432
     env:
       clear:
         POSTGRES_USER: 'puntospoint'
@@ -72,7 +76,6 @@ accessories:
   redis:
     image: redis:7.0
     host: 206.189.226.103
-    port: 6379
     directories:
       - data:/data
     options:
