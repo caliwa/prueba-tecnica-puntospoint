@@ -1,5 +1,6 @@
 # require "sidekiq/web"
 Rails.application.routes.draw do
+  get "up" => "rails/health#show", as: :rails_health_check
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'
   # authenticate :user, lambda { current_user.is_a?(Admin) } do
