@@ -22,6 +22,12 @@ proxy:
   host: rubicon-prog.online
   # Proxy connects to your container on port 80 by default.
   # app_port: 3000
+  healthcheck:
+    path: /up
+    port: 3000
+    interval: 5
+    timeout: 10
+    max_attempts: 10
 
 # Credentials for your image host.
 registry:
