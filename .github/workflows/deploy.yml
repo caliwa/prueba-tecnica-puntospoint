@@ -33,17 +33,36 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set up SSH
-        run: |
-          set -e
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          eval $(ssh-agent -s)
-          ssh-add ~/.ssh/id_rsa
-          ssh-keyscan 206.189.226.103 >> ~/.ssh/known_hosts
+      - name: Set up SSH and add key
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSHKEY }}
+        run: |
+          set -e
+          echo "Starting SSH setup..."
+          # Start the ssh-agent
+          eval $(ssh-agent -s)
+          
+          # Create a temporary file for the key
+          KEY_FILE_PATH=$(mktemp)
+          
+          # Write the secret to the temporary file and ensure it ends with a newline
+          echo "${SSH_PRIVATE_KEY}" > "${KEY_FILE_PATH}"
+          
+          # Ensure correct permissions on the key file
+          chmod 600 "${KEY_FILE_PATH}"
+          
+          # Add the key to the agent
+          ssh-add "${KEY_FILE_PATH}"
+          
+          echo "SSH key added to agent."
+          
+          # Create .ssh directory
+          mkdir -p ~/.ssh
+          
+          # Scan the host key and add it to known_hosts
+          ssh-keyscan 206.189.226.103 >> ~/.ssh/known_hosts
+          
+          echo "Host key for 206.189.226.103 added to known_hosts."
 
       - name: Deploy with Kamal
         run: bin/kamal deploy
