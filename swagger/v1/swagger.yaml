@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.1
 info:
-  title: API V1
+  title: Prueba técnicas Puntospoint
   version: v1
 paths:
   "/api/v1/analytics/most_purchased_products_by_category":
