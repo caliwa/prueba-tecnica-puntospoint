@@ -21,14 +21,8 @@ proxy:
   ssl: true
   host: rubicon-prog.online
   # Proxy connects to your container on port 80 by default.
-  # app_port: 3000
-  healthcheck:
-    path: /up
-    port: 3000
-    interval: 5
-    timeout: 10
-    max_attempts: 10
-
+  app_port: 3000
+ 
 # Credentials for your image host.
 registry:
   # Specify the registry server, if you're not using Docker Hub
