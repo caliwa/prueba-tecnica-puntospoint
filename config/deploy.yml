@@ -40,8 +40,8 @@ env:
     RAILS_SERVE_STATIC_FILES: true
     # Database configuration para Rails
     POSTGRES_DB: 'puntospoint_production'
-    POSTGRES_USER: 'puntospoint_app'
-    POSTGRES_HOST: 'puntospoint_app-db'
+    POSTGRES_USER: 'puntospoint'
+    POSTGRES_HOST: 'puntospoint-db'
     # Redis configuration
     REDIS_URL: 'redis://puntospoint-redis:6379/0'
   secret:
