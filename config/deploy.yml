@@ -78,25 +78,25 @@ builder:
 
 # Use accessory services (secrets come from .kamal/secrets).
 #
-accessories:
-  db:
-    image: postgres:16
-    host: 206.189.226.103
-    env:
-      clear:
-        POSTGRES_USER: 'puntospoint'
-        POSTGRES_DB: 'puntospoint_production'
-      secret:
-        - POSTGRES_PASSWORD
-    directories:
-      - data:/var/lib/postgresql/data
-    options:
-      network: 'private'
+# accessories:
+#   db:
+#     image: postgres:16
+#     host: 206.189.226.103
+#     env:
+#       clear:
+#         POSTGRES_USER: 'puntospoint'
+#         POSTGRES_DB: 'puntospoint_production'
+#       secret:
+#         - POSTGRES_PASSWORD
+#     directories:
+#       - data:/var/lib/postgresql/data
+#     options:
+#       network: 'private'
 
-  redis:
-    image: redis:7.0
-    host: 206.189.226.103
-    directories:
-      - data:/data
-    options:
-      network: 'private'
+#   redis:
+#     image: redis:7.0
+#     host: 206.189.226.103
+#     directories:
+#       - data:/data
+#     options:
+#       network: 'private'
