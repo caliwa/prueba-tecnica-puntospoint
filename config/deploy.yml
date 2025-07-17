@@ -8,8 +8,6 @@ image: caliwa/puntospoint
 servers:
   web:
     - 206.189.226.103
-  options:
-      network: 'private'
   
   job:
     hosts:
