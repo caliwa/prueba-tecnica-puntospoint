@@ -1,13 +1,13 @@
 # require "sidekiq/web"
 Rails.application.routes.draw do
-  root to: redirect('/api-docs')
+  root to: redirect("/api-docs")
 
   get "up" => "rails/health#show", as: :rails_health_check
-  mount Rswag::Ui::Engine => '/api-docs'
-  mount Rswag::Api::Engine => '/api-docs'
+  mount Rswag::Ui::Engine => "/api-docs"
+  mount Rswag::Api::Engine => "/api-docs"
   # authenticate :user, lambda { current_user.is_a?(Admin) } do
   #   mount Sidekiq::Web  => "/sidekiq"
-  # 
+  #
   devise_for :users, path: "", path_names: {
     sign_in: "login",
     sign_out: "logout",

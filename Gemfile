@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem 'kamal', '~> 2.7'
+gem "kamal", "~> 2.7"
 
 gem "rack-cors"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
@@ -72,7 +72,7 @@ gem "rswag"
 
 group :development, :test do
   gem "rspec-rails"
-  gem 'solargraph-rails'
+  gem "solargraph-rails"
 end
 
 gem "rails-observers"

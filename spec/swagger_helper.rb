@@ -8,12 +8,12 @@ RSpec.configure do |config|
   # to ensure that it's configured to serve Swagger from the same folder
   config.openapi_root = Rails.root.join('swagger').to_s
 
-  # Define one or more Swagger documents and provide global metadata for each one
-  # When you run the 'rswag:specs:swaggerize' rake task, the complete Swagger will
-  # be generated at the provided relative path under openapi_root
-  # By default, the operations defined in spec files are added to the first
-  # document below. You can override this behavior by adding a openapi_spec tag to the
-  # the root example_group in your specs, e.g. describe '...', openapi_spec: 'v2/swagger.json'
+# Define one or more Swagger documents and provide global metadata for each one
+# When you run the 'rswag:specs:swaggerize' rake task, the complete Swagger will
+# be generated at the provided relative path under openapi_root
+# By default, the operations defined in spec files are added to the first
+# document below. You can override this behavior by adding a openapi_spec tag to the
+# the root example_group in your specs, e.g. describe '...', openapi_spec: 'v2/swagger.json'
 config.swagger_docs = {
     'v1/swagger.yaml' => {
       openapi: '3.0.1',
@@ -62,7 +62,7 @@ config.swagger_docs = {
                 required: %w[email password password_confirmation]
               }
             },
-            required: ['user']
+            required: [ 'user' ]
           },
           # Schema para el payload de login
           user_login_payload: {
@@ -77,7 +77,7 @@ config.swagger_docs = {
                 required: %w[email password]
               }
             },
-            required: ['user']
+            required: [ 'user' ]
           }
         },
         securitySchemes: {

@@ -110,7 +110,7 @@ def purchases_list
     render json: [], status: :ok
     return
   end
-  
+
   # Inicia una consulta NUEVA y LIMPIA, sin joins, usando los IDs.
   # El .preload aquí funcionará perfectamente porque no hay conflictos.
   final_purchases = Purchase.where(id: purchase_ids)
@@ -217,4 +217,3 @@ end
     render json: formatted_result, status: :ok
   end
 end
-

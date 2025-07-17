@@ -17,7 +17,7 @@ RSpec.describe 'Authentication API', type: :request do
         required: %w[email password]
       }
     },
-    required: ['user']
+    required: [ 'user' ]
   }.freeze
 
   USER_RESPONSE_SCHEMA = {
@@ -43,7 +43,7 @@ RSpec.describe 'Authentication API', type: :request do
         required: %w[email password]
       }
     },
-    required: ['user']
+    required: [ 'user' ]
   }.freeze
 
   path '/users' do
@@ -58,12 +58,12 @@ RSpec.describe 'Authentication API', type: :request do
         let(:user) { { user: { email: 'test@example.com', password: 'password123', password_confirmation: 'password123', type: 'Customer' } } }
         schema type: :object,
                properties: {
-                 status: { 
-                   type: :object, 
-                   properties: { 
-                     code: { type: :integer, example: 200 }, 
-                     message: { type: :string, example: 'Autenticado y creado correctamente' } 
-                   } 
+                 status: {
+                   type: :object,
+                   properties: {
+                     code: { type: :integer, example: 200 },
+                     message: { type: :string, example: 'Autenticado y creado correctamente' }
+                   }
                  },
                  data: USER_RESPONSE_SCHEMA
                }
@@ -78,12 +78,12 @@ RSpec.describe 'Authentication API', type: :request do
         let(:user) { { user: { email: 'invalid-email', password: 'p' } } }
         schema type: :object,
                properties: {
-                 status: { 
-                   type: :object, 
-                   properties: { 
-                     code: { type: :integer, example: 422 }, 
-                     message: { type: :string, example: 'El usuario no pudo ser creado.' } 
-                   } 
+                 status: {
+                   type: :object,
+                   properties: {
+                     code: { type: :integer, example: 422 },
+                     message: { type: :string, example: 'El usuario no pudo ser creado.' }
+                   }
                  }
                }
         run_test! do |response|
@@ -115,21 +115,21 @@ RSpec.describe 'Authentication API', type: :request do
       response(200, 'Login exitoso') do
         let(:test_user) { User.create!(email: 'test@example.com', password: 'password123', type: 'Customer') }
         let(:user) { { user: { email: test_user.email, password: 'password123' } } }
-        
+
         header 'Authorization', type: :string, description: 'Bearer token JWT para autenticación en futuras peticiones.'
-        
+
         schema type: :object,
                properties: {
-                 status: { 
-                   type: :object, 
-                   properties: { 
-                     code: { type: :integer, example: 200 }, 
-                     message: { type: :string, example: 'Logueado exitosamente' } 
-                   } 
+                 status: {
+                   type: :object,
+                   properties: {
+                     code: { type: :integer, example: 200 },
+                     message: { type: :string, example: 'Logueado exitosamente' }
+                   }
                  },
                  data: USER_RESPONSE_SCHEMA
                }
-        
+
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(data['status']['code']).to eq(200)
@@ -164,18 +164,18 @@ RSpec.describe 'Authentication API', type: :request do
       tags 'Authentication'
       description 'Cierra la sesión del usuario actual. Requiere token JWT válido.'
       produces 'application/json'
-      security [Bearer: []]
+      security [ Bearer: [] ]
 
       response(200, 'Logout exitoso') do
         # Simular usuario autenticado
         let(:Authorization) { 'Bearer valid_jwt_token' }
-        
+
         schema type: :object,
                properties: {
                  status: { type: :integer, example: 200 },
                  message: { type: :string, example: 'Deslogueado exitosamente' }
                }
-        
+
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(data['status']).to eq(200)
@@ -185,13 +185,13 @@ RSpec.describe 'Authentication API', type: :request do
 
       response(401, 'No autorizado') do
         let(:Authorization) { 'Bearer invalid_token' }
-        
+
         schema type: :object,
                properties: {
                  status: { type: :integer, example: 401 },
                  message: { type: :string, example: 'No se pudo encontrar una sesión activa.' }
                }
-        
+
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(data['status']).to eq(401)
