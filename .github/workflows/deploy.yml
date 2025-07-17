@@ -39,7 +39,12 @@ jobs:
           wget https://download.cloud.lastpass.com/linux/lplinux.tar.bz2
           tar xjf lplinux.tar.bz2
           
+          echo "--- Listing extracted files ---"
+          ls -la
+          echo "-----------------------------"
+          
           sudo ./install.sh
+          
           
           echo "${{ secrets.LASTPASS_MASTER_PASSWORD }}" | lpass login --trust ${{ secrets.LASTPASS_USER }}
 
