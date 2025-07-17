@@ -344,7 +344,11 @@ Devise.setup do |config|
   end
 
   config.jwt do |jwt|
-    jwt.secret = "608de9e6ed743e2a9bfa470789817df1"
+    jwt.secret = ENV["RAILS_SECRET_KEY_BASE"] || 
+            (Rails.application.credentials[:secret_key_base] if Rails.application.credentials.secret_key_base?) ||
+            Rails.application.secret_key_base ||
+            ENV['SECRET_KEY_BASE'] ||
+            'fallback_secret_for_asset_precompilation'
     jwt.dispatch_requests = [
       ['POST', %r{^/login$}]
     ]
