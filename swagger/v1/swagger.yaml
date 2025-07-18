@@ -116,7 +116,7 @@ paths:
           type: integer
       - name: customer_id
         in: query
-        description: ID del cliente (Customer).
+        description: ID del cliente (User).
         required: false
         schema:
           type: integer
@@ -266,7 +266,7 @@ paths:
                     example: user@example.com
                   type:
                     type: string
-                    example: Customer
+                    example: User
                   created_at:
                     type: string
                     format: date-time
@@ -279,12 +279,12 @@ paths:
                 - type
         '401':
           description: unauthorized
-  "/users":
+  "/signup":
     post:
       summary: Crear una nueva cuenta de usuario
       tags:
       - Authentication
-      description: Registro de nuevo usuario. Acepta Customer o Admin como tipo.
+      description: Registro de nuevo usuario. Acepta User o Admin como tipo.
       parameters: []
       responses:
         '200':
@@ -361,16 +361,16 @@ paths:
                       example: user@example.com
                     password:
                       type: string
-                      example: password123
+                      example: password
                     password_confirmation:
                       type: string
-                      example: password123
+                      example: password
                       x-nullable: true
                     type:
                       type: string
-                      example: Customer
+                      example: User
                       x-nullable: true
-                      description: Puede ser Customer o Admin
+                      description: Puede ser User o Admin
                   required:
                   - email
                   - password
@@ -416,7 +416,7 @@ paths:
                         example: user@example.com
                       type:
                         type: string
-                        example: Customer
+                        example: User
                       created_at:
                         type: string
                         format: date-time
@@ -457,13 +457,13 @@ paths:
                       example: admin@example.com
                     password:
                       type: string
-                      example: password123
+                      example: password
                   required:
                   - email
                   - password
               required:
               - user
-  "/users/sign_out":
+  "/logout":
     delete:
       summary: Cerrar sesión de usuario
       tags:
@@ -535,14 +535,14 @@ components:
               example: user@example.com
             password:
               type: string
-              example: password123
+              example: password
             password_confirmation:
               type: string
-              example: password123
+              example: password
             type:
               type: string
-              example: Customer
-              description: Puede ser Customer o Admin
+              example: User
+              description: Puede ser User o Admin
           required:
           - email
           - password
@@ -560,14 +560,14 @@ components:
               example: admin@example.com
             password:
               type: string
-              example: password123
+              example: password
           required:
           - email
           - password
       required:
       - user
   securitySchemes:
-    bearer_auth:
+    Bearer:
       type: http
       scheme: bearer
       bearerFormat: JWT
