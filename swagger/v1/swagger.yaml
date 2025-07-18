@@ -499,7 +499,7 @@ paths:
                     type: string
                     example: No se pudo encontrar una sesión activa.
 servers:
-- url: http://{defaultHost}
+- url: https://{defaultHost}
   variables:
     defaultHost:
       default: localhost:3000
