@@ -376,7 +376,7 @@ paths:
                   - password
               required:
               - user
-  "/users/sign_in":
+  "/login":
     post:
       summary: Iniciar sesión de usuario
       tags:

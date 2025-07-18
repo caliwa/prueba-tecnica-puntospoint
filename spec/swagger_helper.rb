@@ -24,12 +24,8 @@ config.swagger_docs = {
       paths: {},
       servers: [
         {
-          url: 'http://{defaultHost}',
-          variables: {
-            defaultHost: {
-              default: 'localhost:3000'
-            }
-          }
+          url: window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://rubicon-prog.online',
+          description: 'API Server'
         }
       ],
       # --- INICIO DE LA SECCIÓN IMPORTANTE ---
