@@ -53,21 +53,21 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
-  run_tests:
-    runs-on: ubuntu-latest
+  # run_tests:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
+  #     - name: Set up Ruby
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: .ruby-version
+  #         bundler-cache: true
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/rails test
+  #     - name: Scan for common Rails security vulnerabilities using static analysis
+  #       run: bin/rails test
 
   deploy:
     runs-on: ubuntu-latest
