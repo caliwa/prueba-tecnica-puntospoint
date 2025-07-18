@@ -24,8 +24,12 @@ config.swagger_docs = {
       paths: {},
       servers: [
         {
-          url: window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://rubicon-prog.online',
-          description: 'API Server'
+          url: 'https://rubicon-prog.online',
+          description: 'Production server'
+        },
+        {
+          url: 'http://localhost:3000',
+          description: 'Development server'
         }
       ],
       # --- INICIO DE LA SECCIÓN IMPORTANTE ---
