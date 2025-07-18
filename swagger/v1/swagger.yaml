@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.1
 info:
-  title: Prueba técnicas Puntospoint
+  title: Prueba Técnica Puntospoint - Carlos González
   version: v1
 paths:
   "/api/v1/analytics/most_purchased_products_by_category":
@@ -502,7 +502,7 @@ servers:
 - url: https://{defaultHost}
   variables:
     defaultHost:
-      default: localhost:3000
+      default: rubicon-prog.online
 components:
   schemas:
     user_response:
