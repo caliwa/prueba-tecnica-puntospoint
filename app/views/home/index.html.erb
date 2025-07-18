@@ -37,6 +37,7 @@
     border: 2px solid #ffffff;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: none; /* El botón está oculto inicialmente */
   }
 
   /* Efecto al pasar el mouse por encima */
@@ -46,9 +47,65 @@
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   }
+
+  .password-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  input[type="password"] {
+    padding: 10px;
+    margin: 10px;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: transparent;
+    color: white;
+  }
+
+  button {
+    background-color: #ffffff;
+    color: #4a148c;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 1rem;
+    border: 2px solid #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #f3e5f5;
+    color: #4a148c;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
 </style>
 
 <div class="container">
   <h1>Puntospoint</h1>
-  
+  <p>Por favor, ingresa la clave para acceder a la documentación de la API:</p>
+
+  <div class="password-container">
+    <input type="password" id="password" placeholder="Ingrese la clave" required>
+    <button id="submit-btn" onclick="validatePassword()">Acceder</button>
+  </div>
+
+  <a id="docs-btn" class="btn-docs" href="/api-docs">Ver Documentación API</a>
 </div>
+
+<script>
+  function validatePassword() {
+    const correctPassword = "puntospoint";
+    const enteredPassword = document.getElementById('password').value;
+
+    if (enteredPassword === correctPassword) {
+      document.getElementById('docs-btn').style.display = 'inline-block';
+    } else {
+      alert("Clave incorrecta. No puedes ver el contenido.");
+      document.getElementById('password').value = ''; // Limpiar el campo de la contraseña
+    }
+  }
+</script>
