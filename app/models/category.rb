@@ -1,11 +1,20 @@
 class Category < ApplicationRecord
-  has_many :audit_events, as: :auditable, dependent: :destroy
   has_many :categorizations, dependent: :destroy
-  has_many :products, through: :categorizations, source: :categorizable, source_type: "Product"
-  has_many :subcategories, through: :categorizations, source: :categorizable, source_type: "Category"
+  has_many :audit_events, as: :auditable, dependent: :destroy
 
-  has_many :parent_categorizations, as: :categorizable, class_name: "Categorization"
-  has_many :parent_categories, through: :parent_categorizations, source: :category
+  has_many :products,
+           through: :categorizations,
+           source: :categorizable,
+           source_type: "Product"
+
+  has_many :subcategorizations, -> { where(categorizable_type: 'Category') },
+           class_name: 'Categorization',
+           foreign_key: 'category_id'
+  has_many :subcategories,
+           through: :subcategorizations,
+           source: :categorizable,
+           source_type: 'Category'
+
 
   validates :name, presence: true, uniqueness: true
   validates :status, inclusion: { in: %w[active inactive] }

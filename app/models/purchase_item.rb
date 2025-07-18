@@ -1,16 +1,14 @@
 class PurchaseItem < ApplicationRecord
-  belongs_to :purchasable, polymorphic: true # La relación polimórfica original
+  belongs_to :purchasable, polymorphic: true
+  belongs_to :purchase
 
   # --- Solución Avanzada para Carga Específica ---
   # 1. Auto-referencia para habilitar el ":through"
-  has_one :self_ref, class_name: "PurchaseItem", foreign_key: :id
-  has_one :product, through: :self_ref, source: :purchasable, source_type: "Product"
+
 
   validates :quantity, presence: true, numericality: { greater_than: 0 }
   # 2. Asociaciones directas y no polimórficas
   # Ahora puedes hacer `includes(:product)` directamente sobre un PurchaseItem
-  has_one :product, through: :self_ref, source: :purchasable, source_type: "Product"
-
 
 
   validates :quantity, presence: true, numericality: { greater_than: 0 }
