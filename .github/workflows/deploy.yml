@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: false # Prevents ongoing deployments from being canceled
 
 env:
-  SERVER_ADDR: “206.189.226.103”
+  SERVER_ADDR: “134.122.122.138”
 
 jobs:
   deploy:

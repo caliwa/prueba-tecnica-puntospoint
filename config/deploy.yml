@@ -8,13 +8,13 @@ image: caliwa/puntospoint
 servers:
   web:
     hosts:
-      - 206.189.226.103
+      - 134.122.122.138
     options:
       network: 'private'
   
   job:
     hosts:
-      - 206.189.226.103
+      - 134.122.122.138
     cmd: bundle exec sidekiq -q default -q mailers
     options:
       network: 'private'
@@ -57,7 +57,7 @@ volumes:
 accessories:
   db:
     image: postgres:16
-    host: 206.189.226.103
+    host: 134.122.122.138
     env:
       clear:
         POSTGRES_USER: 'puntospoint'
@@ -71,7 +71,7 @@ accessories:
   
   redis:
     image: redis:7.0
-    host: 206.189.226.103
+    host: 134.122.122.138
     directories:
       - data:/data
     options:
