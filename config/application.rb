@@ -1,5 +1,8 @@
 require_relative "boot"
 
+require_relative "../lib/middleware/one_time_token_validator"
+
+
 require "rails/all"
 
 # Require the gems listed in Gemfile, including any gems
@@ -26,5 +29,8 @@ module Puntospoint
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
     config.api_only = true
+
+    config.middleware.use OneTimeTokenValidator
+
   end
 end
