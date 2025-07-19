@@ -30,6 +30,8 @@ module Puntospoint
     # config.eager_load_paths << Rails.root.join("extras")
     config.api_only = true
 
+    config.autoload_paths << Rails.root.join("lib")
+
     config.middleware.use OneTimeTokenValidator
 
   end
