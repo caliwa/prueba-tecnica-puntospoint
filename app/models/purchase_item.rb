@@ -2,8 +2,7 @@ class PurchaseItem < ApplicationRecord
   belongs_to :purchasable, polymorphic: true
   belongs_to :purchase
 
-  # --- Solución Avanzada para Carga Específica ---
-  # 1. Auto-referencia para habilitar el ":through"
+  belongs_to :product, class_name: 'Product', foreign_key: 'purchasable_id', optional: true
 
 
   validates :quantity, presence: true, numericality: { greater_than: 0 }

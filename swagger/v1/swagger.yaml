@@ -499,12 +499,12 @@ paths:
                     type: string
                     example: No se pudo encontrar una sesión activa.
 servers:
-- url: https://{defaultHost}
-# - url: http://{defaultHost}
+# - url: https://{defaultHost}
+- url: http://{defaultHost}
   variables:
     defaultHost:
-      default: rubicon-prog.online
-      # default: localhost:3000
+      # default: rubicon-prog.online
+      default: localhost:3000
 components:
   schemas:
     user_response:
