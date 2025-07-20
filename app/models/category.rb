@@ -7,13 +7,13 @@ class Category < ApplicationRecord
            source: :categorizable,
            source_type: "Product"
 
-  has_many :subcategorizations, -> { where(categorizable_type: 'Category') },
-           class_name: 'Categorization',
-           foreign_key: 'category_id'
+  has_many :subcategorizations, -> { where(categorizable_type: "Category") },
+           class_name: "Categorization",
+           foreign_key: "category_id"
   has_many :subcategories,
            through: :subcategorizations,
            source: :categorizable,
-           source_type: 'Category'
+           source_type: "Category"
 
 
   validates :name, presence: true, uniqueness: true

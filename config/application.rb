@@ -33,6 +33,5 @@ module Puntospoint
     config.autoload_paths << Rails.root.join("lib")
 
     config.middleware.use OneTimeTokenValidator
-
   end
 end

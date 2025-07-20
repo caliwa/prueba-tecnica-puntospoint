@@ -9,7 +9,6 @@ require 'rails_helper'
 # SPEC PARA AUTHENTICATION (DEVISE)
 # ==============================================================================
 RSpec.describe 'Authentication API', type: :request do
-
   # Path para el registro de usuarios
   path '/signup' do
     post('Create a new user account') do
@@ -34,7 +33,7 @@ RSpec.describe 'Authentication API', type: :request do
             required: %w[email password]
           }
         },
-        required: [:user]
+        required: [ :user ]
       }
 
       response(200, 'Usuario creado exitosamente') { run_test! }
@@ -63,7 +62,7 @@ RSpec.describe 'Authentication API', type: :request do
             required: %w[email password]
           }
         },
-        required: [:user]
+        required: [ :user ]
       }
 
       response(200, 'Login exitoso') do
@@ -81,7 +80,7 @@ RSpec.describe 'Authentication API', type: :request do
       tags 'Authentication'
       summary 'Cerrar sesión de usuario'
       # Esta ruta SÍ requiere autenticación para saber a quién desloguear
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       response(200, 'Logout exitoso') { run_test! }
       response(401, 'No autorizado') { run_test! }
@@ -102,7 +101,7 @@ RSpec.describe 'Analytics API', type: :request do
     get('Productos más comprados por categoría') do
       tags 'Analytics'
       produces 'application/json'
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       response(200, 'successful') { run_test! }
       response(401, 'unauthorized') { run_test! }
@@ -113,7 +112,7 @@ RSpec.describe 'Analytics API', type: :request do
     get('Top 3 productos con más ingresos por categoría') do
       tags 'Analytics'
       produces 'application/json'
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       response(200, 'successful') { run_test! }
       response(401, 'unauthorized') { run_test! }
@@ -124,7 +123,7 @@ RSpec.describe 'Analytics API', type: :request do
     get('Listado de compras con filtros') do
       tags 'Analytics'
       produces 'application/json'
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       # Definición de parámetros de consulta (query params)
       parameter name: :purchase_date_from, in: :query, type: :string, format: :date, required: false
@@ -141,7 +140,7 @@ RSpec.describe 'Analytics API', type: :request do
     get('Conteo de compras agrupadas por tiempo') do
       tags 'Analytics'
       produces 'application/json'
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       parameter name: :granularity, in: :query, type: :string, enum: %w[hour day week month year], required: true
       parameter name: :purchase_date_from, in: :query, type: :string, format: :date, required: false
@@ -165,7 +164,7 @@ RSpec.describe 'Categories API', type: :request do
     get('List all categories') do
       tags 'Categories'
       produces 'application/json'
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
       response(200, 'successful') { run_test! }
       response(401, 'unauthorized') { run_test! }
     end
@@ -174,7 +173,7 @@ RSpec.describe 'Categories API', type: :request do
       tags 'Categories'
       consumes 'application/json'
       produces 'application/json'
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       parameter name: :category, in: :body, schema: {
         type: :object,
@@ -182,7 +181,7 @@ RSpec.describe 'Categories API', type: :request do
           name: { type: :string, example: 'Nueva Categoría' },
           status: { type: :string, example: 'active' }
         },
-        required: ['name']
+        required: [ 'name' ]
       }
 
       response(201, 'created') { run_test! }
@@ -197,7 +196,7 @@ RSpec.describe 'Categories API', type: :request do
     get('Show a category') do
       tags 'Categories'
       produces 'application/json'
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
       response(200, 'successful') { run_test! }
       response(404, 'not found') { run_test! }
     end
@@ -206,8 +205,8 @@ RSpec.describe 'Categories API', type: :request do
       tags 'Categories'
       consumes 'application/json'
       produces 'application/json'
-      security [bearer_auth: []]
-      
+      security [ bearer_auth: [] ]
+
       parameter name: :category, in: :body, schema: {
         type: :object,
         properties: {
@@ -215,14 +214,14 @@ RSpec.describe 'Categories API', type: :request do
           status: { type: :string, example: 'inactive' }
         }
       }
-      
+
       response(200, 'successful') { run_test! }
       response(404, 'not found') { run_test! }
     end
 
     delete('Delete a category') do
       tags 'Categories'
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
       response(204, 'no content') { run_test! }
       response(404, 'not found') { run_test! }
     end

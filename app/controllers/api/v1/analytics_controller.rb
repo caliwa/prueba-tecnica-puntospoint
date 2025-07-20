@@ -93,12 +93,12 @@ class Api::V1::AnalyticsController < ApplicationController
                                       .where(categories: { id: params[:category_id] })
     end
 
-    #Filtro por Administrador
+    # Filtro por Administrador
     if params[:admin_id].present?
       purchases_query = purchases_query.joins(products: :creator)
                           .where(
                             products: { created_by_user_id: params[:admin_id] },
-                            users:    { type: 'Admin' }
+                            users:    { type: "Admin" }
                           )
     end
 
@@ -186,12 +186,12 @@ class Api::V1::AnalyticsController < ApplicationController
       purchases = purchases.where(customer_id: params[:customer_id])
     end
 
-    #Filtro por Administrador
+    # Filtro por Administrador
     if params[:admin_id].present?
       purchases = purchases.joins(products: :creator)
                           .where(
                             products: { created_by_user_id: params[:admin_id] },
-                            users:    { type: 'Admin' }
+                            users:    { type: "Admin" }
                           )
     end
 
