@@ -11,10 +11,10 @@ RSpec.describe "Api::V1::AnalyticsController", type: :request do
   let!(:category_home) { create(:category, name: "Hogar") }
 
   # Productos
-  let!(:product_laptop) { create(:product, name: "Laptop Pro", price: 1500, creator: admin, categories: [category_tech]) }
-  let!(:product_keyboard) { create(:product, name: "Teclado Mecánico", price: 150, creator: admin, categories: [category_tech]) }
-  let!(:product_lamp) { create(:product, name: "Lámpara LED", price: 80, creator: admin, categories: [category_home]) }
-  let!(:product_mouse) { create(:product, name: "Mouse Gamer", price: 100, creator: another_admin, categories: [category_tech]) }
+  let!(:product_laptop) { create(:product, name: "Laptop Pro", price: 1500, creator: admin, categories: [ category_tech ]) }
+  let!(:product_keyboard) { create(:product, name: "Teclado Mecánico", price: 150, creator: admin, categories: [ category_tech ]) }
+  let!(:product_lamp) { create(:product, name: "Lámpara LED", price: 80, creator: admin, categories: [ category_home ]) }
+  let!(:product_mouse) { create(:product, name: "Mouse Gamer", price: 100, creator: another_admin, categories: [ category_tech ]) }
 
   # Bloque `before` para crear las transacciones (compras)
   before do

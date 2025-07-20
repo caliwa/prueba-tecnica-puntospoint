@@ -11,6 +11,6 @@ FactoryBot.define do
     end
 
     # Fábrica específica para crear un admin directamente
-    factory :admin, traits: [:admin]
+    factory :admin, traits: [ :admin ]
   end
 end
