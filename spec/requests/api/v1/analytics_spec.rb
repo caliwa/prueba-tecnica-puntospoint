@@ -1,161 +1,132 @@
-# spec/requests/api/v1/analytics_spec.rb
-require 'swagger_helper'
+require 'rails_helper'
 
-RSpec.describe 'API V1 Analytics', type: :request do
-  let(:Authorization) { "Bearer <YOUR_JWT_TOKEN>" }
+RSpec.describe "Api::V1::AnalyticsController", type: :request do
+  let!(:admin) { create(:admin) }
+  let!(:another_admin) { create(:admin) }
+  let!(:user) { create(:user) }
+  let!(:customer1) { create(:customer) }
+  let!(:customer2) { create(:customer) }
 
-  path '/api/v1/analytics/most_purchased_products_by_category' do
-    get('Productos más comprados por categoría') do
-      tags 'Analytics'
-      # summary 'Obtiene el producto más vendido (por cantidad) para cada categoría.'
-      produces 'application/json'
-      security [ Bearer: [] ]
+  let!(:category_tech) { create(:category, name: "Tecnología") }
+  let!(:category_home) { create(:category, name: "Hogar") }
 
-      response(200, 'successful') do
-        schema type: :object,
-               description: 'Un objeto donde cada clave es el nombre de una categoría.',
-               additionalProperties: {
-                 type: :object,
-                 properties: {
-                   id: { type: :integer, example: 101 },
-                   name: { type: :string, example: 'Producto X' },
-                   total_quantity_sold: { type: :integer, example: 150 }
-                 }
-               },
-               example: {
-                 "Categoría A": { id: 101, name: "Producto X", total_quantity_sold: 150 },
-                 "Categoría B": { id: 205, name: "Producto Y", total_quantity_sold: 98 }
-               }
-        run_test!
+  # Productos
+  let!(:product_laptop) { create(:product, name: "Laptop Pro", price: 1500, creator: admin, categories: [category_tech]) }
+  let!(:product_keyboard) { create(:product, name: "Teclado Mecánico", price: 150, creator: admin, categories: [category_tech]) }
+  let!(:product_lamp) { create(:product, name: "Lámpara LED", price: 80, creator: admin, categories: [category_home]) }
+  let!(:product_mouse) { create(:product, name: "Mouse Gamer", price: 100, creator: another_admin, categories: [category_tech]) }
+
+  # Bloque `before` para crear las transacciones (compras)
+  before do
+    # Compra 1: Laptop (x2) y Teclado (x5). Ambos productos del mismo admin.
+    purchase1 = create(:purchase, customer: customer1, purchase_date: 1.day.ago)
+    create(:purchase_item, purchase: purchase1, purchasable: product_laptop, quantity: 2, unit_price: 1500)
+    create(:purchase_item, purchase: purchase1, purchasable: product_keyboard, quantity: 5, unit_price: 150)
+
+    # Compra 2: Lámpara (x10)
+    purchase2 = create(:purchase, customer: customer2, purchase_date: Time.current)
+    create(:purchase_item, purchase: purchase2, purchasable: product_lamp, quantity: 10, unit_price: 80)
+
+    # Compra 3: Mouse (x3)
+    purchase3 = create(:purchase, customer: customer1, purchase_date: Time.current)
+    create(:purchase_item, purchase: purchase3, purchasable: product_mouse, quantity: 3, unit_price: 100)
+  end
+
+  # --- TESTS PARA CADA ENDPOINT ---
+
+  describe "GET /api/v1/analytics/most_purchased_products_by_category" do
+    context "cuando el usuario es un administrador" do
+      before { get "/api/v1/analytics/most_purchased_products_by_category", headers: auth_headers_for(admin) }
+
+      it "responde con éxito (status 200)" do
+        expect(response).to have_http_status(:success)
       end
 
-      response(401, 'unauthorized') do
-        let(:Authorization) { 'invalid' }
-        run_test!
+      it "devuelve el producto MÁS VENDIDO (en cantidad) por categoría" do
+        expect(json["Tecnología"]["name"]).to eq("Teclado Mecánico")
+        expect(json["Tecnología"]["total_quantity_sold"]).to eq(5)
+        expect(json["Hogar"]["name"]).to eq("Lámpara LED")
+        expect(json["Hogar"]["total_quantity_sold"]).to eq(10)
       end
     end
   end
 
-  path '/api/v1/analytics/top_revenue_products_by_category' do
-    get('Top 3 productos con más ingresos por categoría') do
-      tags 'Analytics'
-      # summary 'Obtiene los 3 productos que más han recaudado ($) por cada categoría.'
-      produces 'application/json'
-      security [ Bearer: [] ]
+  describe "GET /api/v1/analytics/top_revenue_products_by_category" do
+    context "cuando el usuario es un administrador" do
+      before { get "/api/v1/analytics/top_revenue_products_by_category", headers: auth_headers_for(admin) }
 
-      response(200, 'successful') do
-        schema type: :object,
-               description: 'Un objeto donde cada clave es el nombre de una categoría y el valor es un array con los 3 productos top.',
-               additionalProperties: {
-                 type: :array,
-                 items: {
-                   type: :object,
-                   properties: {
-                     id: { type: :integer, example: 102 },
-                     name: { type: :string, example: 'Producto Z' },
-                     total_revenue: { type: :number, format: :float, example: 1500.50 }
-                   }
-                 }
-               },
-               example: {
-                 "Categoría A": [
-                   { id: 102, name: "Producto Z", total_revenue: 1500.50 },
-                   { id: 105, name: "Producto W", total_revenue: 1200.00 },
-                   { id: 101, name: "Producto X", total_revenue: 950.75 }
-                 ]
-               }
-        run_test!
-      end
-
-      response(401, 'unauthorized') do
-        run_test!
+      it "devuelve los productos con MÁS INGRESOS ($) por categoría" do
+        top_tech_products = json["Tecnología"]
+        expect(top_tech_products.first["name"]).to eq("Laptop Pro")
+        expect(top_tech_products.first["total_revenue"]).to eq(3000.0)
       end
     end
   end
 
-  path '/api/v1/analytics/purchases_list' do
-    get('Listado de compras con filtros') do
-      tags 'Analytics'
-      # summary 'Obtiene un listado de compras aplicando filtros opcionales.'
-      produces 'application/json'
-      security [ Bearer: [] ]
-
-      parameter name: :purchase_date_from, in: :query, type: :string, format: :date, description: 'Fecha de inicio (YYYY-MM-DD)', required: false
-      parameter name: :purchase_date_to, in: :query, type: :string, format: :date, description: 'Fecha de fin (YYYY-MM-DD)', required: false
-      parameter name: :category_id, in: :query, type: :integer, description: 'ID de la categoría para filtrar productos.', required: false
-      parameter name: :customer_id, in: :query, type: :integer, description: 'ID del cliente (Customer).', required: false
-
-      response(200, 'successful') do
-        schema type: :array,
-               items: {
-                 type: :object,
-                 properties: {
-                   id: { type: :integer },
-                   customer_name: { type: :string },
-                   purchase_date: { type: :string, format: :date },
-                   total: { type: :number, format: :float },
-                   status: { type: :string },
-                   payment_method: { type: :string },
-                   shipping_address: { type: :string },
-                   items: {
-                     type: :array,
-                     items: {
-                       type: :object,
-                       properties: {
-                         id: { type: :integer },
-                         product_name: { type: :string },
-                         quantity: { type: :integer },
-                         unit_price: { type: :number, format: :float },
-                         total_price: { type: :number, format: :float },
-                         discount_amount: { type: :number, format: :float },
-                         tax_amount: { type: :number, format: :float }
-                       }
-                     }
-                   }
-                 }
-               }
-        run_test!
+  describe "GET /api/v1/analytics/purchases_list" do
+    context "cuando el usuario es un administrador" do
+      it "devuelve todas las compras sin filtros" do
+        get "/api/v1/analytics/purchases_list", headers: auth_headers_for(admin)
+        expect(json.size).to eq(3)
       end
 
-      response(401, 'unauthorized') do
-        run_test!
+      it "filtra por customer_id" do
+        get "/api/v1/analytics/purchases_list", params: { customer_id: customer1.id }, headers: auth_headers_for(admin)
+        expect(json.size).to eq(2)
+      end
+
+      it "filtra por admin_id" do
+        get "/api/v1/analytics/purchases_list", params: { admin_id: another_admin.id }, headers: auth_headers_for(admin)
+        expect(json.size).to eq(1)
+        expect(json.first["items"].first["product_name"]).to eq("Mouse Gamer")
+      end
+
+      it "filtra por category_id" do
+        get "/api/v1/analytics/purchases_list", params: { category_id: category_home.id }, headers: auth_headers_for(admin)
+        expect(json.size).to eq(1)
+        expect(json.first["items"].first["product_name"]).to eq("Lámpara LED")
       end
     end
   end
 
-  path '/api/v1/analytics/purchase_counts_by_granularity' do
-    get('Conteo de compras agrupadas por tiempo') do
-      tags 'Analytics'
-      # summary 'Obtiene la cantidad de compras agrupadas por hora, día, semana, mes o año.'
-      produces 'application/json'
-      security [ Bearer: [] ]
-
-      parameter name: :granularity, in: :query, type: :string, enum: %w[hour day week month year], description: 'Nivel de agrupación de tiempo.', required: true
-      parameter name: :purchase_date_from, in: :query, type: :string, format: :date, description: 'Fecha de inicio (YYYY-MM-DD)', required: false
-      parameter name: :purchase_date_to, in: :query, type: :string, format: :date, description: 'Fecha de fin (YYYY-MM-DD)', required: false
-      parameter name: :category_id, in: :query, type: :integer, description: 'ID de la categoría para filtrar productos.', required: false
-      parameter name: :customer_id, in: :query, type: :integer, description: 'ID del cliente (Customer).', required: false
-
-      response(200, 'successful') do
-        schema type: :object,
-               description: 'Un objeto donde cada clave es el período de tiempo formateado y el valor es el conteo de compras.',
-               additionalProperties: { type: :integer },
-               example: {
-                 "2025-07-14": 22,
-                 "2025-07-15": 15
-               }
-        run_test!
+  describe "GET /api/v1/analytics/purchase_counts_by_granularity" do
+    context "cuando el usuario es un administrador" do
+      it "agrupa las compras por día" do
+        get "/api/v1/analytics/purchase_counts_by_granularity", params: { granularity: 'day' }, headers: auth_headers_for(admin)
+        today_key = Time.current.strftime("%Y-%m-%d")
+        yesterday_key = 1.day.ago.strftime("%Y-%m-%d")
+        expect(json[today_key]).to eq(2)
+        expect(json[yesterday_key]).to eq(1)
       end
 
-      response(400, 'bad_request') do
-        let(:granularity) { 'invalid_granularity' }
-        schema type: :object, properties: { error: { type: :string } }
-        run_test!
+      it "devuelve error con granularidad inválida" do
+        get "/api/v1/analytics/purchase_counts_by_granularity", params: { granularity: 'milenio' }, headers: auth_headers_for(admin)
+        expect(response).to have_http_status(:bad_request)
       end
 
-      response(401, 'unauthorized') do
-        run_test!
+      it "filtra correctamente las cuentas por admin_id" do
+         get "/api/v1/analytics/purchase_counts_by_granularity", params: { granularity: 'day', admin_id: admin.id }, headers: auth_headers_for(admin)
+         today_key = Time.current.strftime("%Y-%m-%d")
+         yesterday_key = 1.day.ago.strftime("%Y-%m-%d")
+         expect(json[today_key]).to eq(1)
+         expect(json[yesterday_key]).to eq(1)
       end
+    end
+  end
+
+  context "cuando el usuario no es un administrador" do
+    it "devuelve prohibido (status 403) para todos los endpoints" do
+      get "/api/v1/analytics/most_purchased_products_by_category", headers: auth_headers_for(user)
+      expect(response).to have_http_status(:forbidden)
+
+      get "/api/v1/analytics/top_revenue_products_by_category", headers: auth_headers_for(user)
+      expect(response).to have_http_status(:forbidden)
+
+      get "/api/v1/analytics/purchases_list", headers: auth_headers_for(user)
+      expect(response).to have_http_status(:forbidden)
+
+      get "/api/v1/analytics/purchase_counts_by_granularity", params: { granularity: 'day' }, headers: auth_headers_for(user)
+      expect(response).to have_http_status(:forbidden)
     end
   end
 end

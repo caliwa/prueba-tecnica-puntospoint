@@ -72,7 +72,8 @@ gem "rswag"
 
 group :development, :test do
   gem "rspec-rails"
-  gem "solargraph-rails"
+  gem "factory_bot_rails"
+  gem "faker"
 end
 
 gem "rails-observers"

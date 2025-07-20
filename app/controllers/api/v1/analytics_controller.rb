@@ -203,7 +203,7 @@ class Api::V1::AnalyticsController < ApplicationController
 
     # Agrupar por granularidad, utilizando funciones de fecha
     # Para PostgreSQL, utilizamos DATE_TRUNC
-    grouped_counts = purchases.group("DATE_TRUNC('#{granularity}', purchase_date)").count
+    grouped_counts = purchases.distinct.group("DATE_TRUNC('#{granularity}', purchases.purchase_date)").count
 
     # Formatear la respuesta para el gráfico
     formatted_result = grouped_counts.transform_keys do |key|
