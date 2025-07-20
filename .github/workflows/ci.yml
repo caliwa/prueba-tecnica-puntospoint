@@ -70,6 +70,11 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      redis:
+        image: redis:6-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Install packages
@@ -88,6 +93,7 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: "postgres://postgres:password@localhost:5432/puntospoint_test"
+          REDIS_URL: "redis://localhost:6379/0"
         run: |
           # 1. Prepara la base de datos de test (crea la BD, carga el schema)
           bin/rails db:setup
