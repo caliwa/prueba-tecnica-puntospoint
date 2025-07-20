@@ -97,6 +97,8 @@ jobs:
         run: |
           # 1. Prepara la base de datos de test (crea la BD, carga el schema)
           bin/rails db:setup
+          # 3. Ejecutar schema
+          bin/rails db:schema:load
           # 2. Ejecuta la suite de tests de RSpec
           bundle exec rspec
 
