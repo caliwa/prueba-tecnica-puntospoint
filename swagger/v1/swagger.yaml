@@ -1,239 +1,48 @@
----
 openapi: 3.0.1
 info:
   title: Prueba Técnica Puntospoint - Carlos González
   version: v1
+tags:
+- name: Authentication
+  description: Endpoints para registro, login y logout de usuarios.
+- name: User
+  description: Operaciones relacionadas con el usuario autenticado.
+- name: Analytics
+  description: Endpoints para obtener métricas y analíticas de la aplicación.
+- name: Audits
+  description: Endpoints para la auditoría de cambios realizados por administradores.
+- name: Products
+  description: Gestión de productos (CRUD).
+- name: Categories
+  description: Gestión de categorías (CRUD).
+- name: Customers
+  description: Gestión de clientes (CRUD).
 paths:
-  "/api/v1/analytics/most_purchased_products_by_category":
-    get:
-      summary: Productos más comprados por categoría
+  "/login":
+    post:
+      summary: Iniciar sesión de usuario
       tags:
-      - Analytics
-      security:
-      - Bearer: []
+      - Authentication
+      description: Autenticación de usuario con email y password. Retorna un token
+        JWT en el header Authorization.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_login_payload'
       responses:
         '200':
-          description: successful
+          description: Login exitoso
+          headers:
+            Authorization:
+              type: string
+              description: Bearer token JWT para autenticación en futuras peticiones.
           content:
             application/json:
               schema:
-                type: object
-                description: Un objeto donde cada clave es el nombre de una categoría.
-                additionalProperties:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      example: 101
-                    name:
-                      type: string
-                      example: Producto X
-                    total_quantity_sold:
-                      type: integer
-                      example: 150
-                example:
-                  Categoría A:
-                    id: 101
-                    name: Producto X
-                    total_quantity_sold: 150
-                  Categoría B:
-                    id: 205
-                    name: Producto Y
-                    total_quantity_sold: 98
+                $ref: '#/components/schemas/user_auth_response'
         '401':
-          description: unauthorized
-  "/api/v1/analytics/top_revenue_products_by_category":
-    get:
-      summary: Top 3 productos con más ingresos por categoría
-      tags:
-      - Analytics
-      security:
-      - Bearer: []
-      responses:
-        '200':
-          description: successful
-          content:
-            application/json:
-              schema:
-                type: object
-                description: Un objeto donde cada clave es el nombre de una categoría
-                  y el valor es un array con los 3 productos top.
-                additionalProperties:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 102
-                      name:
-                        type: string
-                        example: Producto Z
-                      total_revenue:
-                        type: number
-                        format: float
-                        example: 1500.5
-                example:
-                  Categoría A:
-                  - id: 102
-                    name: Producto Z
-                    total_revenue: 1500.5
-                  - id: 105
-                    name: Producto W
-                    total_revenue: 1200.0
-                  - id: 101
-                    name: Producto X
-                    total_revenue: 950.75
-        '401':
-          description: unauthorized
-  "/api/v1/analytics/purchases_list":
-    get:
-      summary: Listado de compras con filtros
-      tags:
-      - Analytics
-      security:
-      - Bearer: []
-      parameters:
-      - name: purchase_date_from
-        in: query
-        format: date
-        description: Fecha de inicio (YYYY-MM-DD)
-        required: false
-        schema:
-          type: string
-      - name: purchase_date_to
-        in: query
-        format: date
-        description: Fecha de fin (YYYY-MM-DD)
-        required: false
-        schema:
-          type: string
-      - name: category_id
-        in: query
-        description: ID de la categoría para filtrar productos.
-        required: false
-        schema:
-          type: integer
-      - name: customer_id
-        in: query
-        description: ID del cliente (User).
-        required: false
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: successful
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    customer_name:
-                      type: string
-                    purchase_date:
-                      type: string
-                      format: date
-                    total:
-                      type: number
-                      format: float
-                    status:
-                      type: string
-                    payment_method:
-                      type: string
-                    shipping_address:
-                      type: string
-                    items:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          id:
-                            type: integer
-                          product_name:
-                            type: string
-                          quantity:
-                            type: integer
-                          unit_price:
-                            type: number
-                            format: float
-                          total_price:
-                            type: number
-                            format: float
-                          discount_amount:
-                            type: number
-                            format: float
-                          tax_amount:
-                            type: number
-                            format: float
-        '401':
-          description: unauthorized
-  "/api/v1/analytics/purchase_counts_by_granularity":
-    get:
-      summary: Conteo de compras agrupadas por tiempo
-      tags:
-      - Analytics
-      security:
-      - Bearer: []
-      parameters:
-      - name: granularity
-        in: query
-        enum:
-        - hour
-        - day
-        - week
-        - month
-        - year
-        description: "Nivel de agrupación de tiempo.:\n * `hour` \n * `day` \n * `week`
-          \n * `month` \n * `year` \n "
-        required: true
-        schema:
-          type: string
-      - name: purchase_date_from
-        in: query
-        format: date
-        description: Fecha de inicio (YYYY-MM-DD)
-        required: false
-        schema:
-          type: string
-      - name: purchase_date_to
-        in: query
-        format: date
-        description: Fecha de fin (YYYY-MM-DD)
-        required: false
-        schema:
-          type: string
-      - name: category_id
-        in: query
-        description: ID de la categoría para filtrar productos.
-        required: false
-        schema:
-          type: integer
-      - name: customer_id
-        in: query
-        description: ID del cliente (Customer).
-        required: false
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: successful
-          content:
-            application/json:
-              schema:
-                type: object
-                description: Un objeto donde cada clave es el período de tiempo formateado
-                  y el valor es el conteo de compras.
-                additionalProperties:
-                  type: integer
-                example:
-                  '2025-07-14': 22
-                  '2025-07-15': 15
-        '400':
-          description: bad_request
+          description: Credenciales inválidas
           content:
             application/json:
               schema:
@@ -241,86 +50,35 @@ paths:
                 properties:
                   error:
                     type: string
-        '401':
-          description: unauthorized
-  "/api/v1/user/current_user":
-    get:
-      summary: Obtener datos del usuario autenticado
-      tags:
-      - User
-      security:
-      - Bearer: []
-      responses:
-        '200':
-          description: successful
+                    example: Invalid Email or password.
+        '429':
+          description: Demasiadas peticiones
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: integer
-                    example: 1
-                  email:
+                  error:
                     type: string
-                    example: user@example.com
-                  type:
-                    type: string
-                    example: User
-                  created_at:
-                    type: string
-                    format: date-time
-                  updated_at:
-                    type: string
-                    format: date-time
-                required:
-                - id
-                - email
-                - type
-        '401':
-          description: unauthorized
+                    example: Demasiadas peticiones
   "/signup":
     post:
       summary: Crear una nueva cuenta de usuario
       tags:
       - Authentication
       description: Registro de nuevo usuario. Acepta User o Admin como tipo.
-      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_signup_payload'
       responses:
         '200':
           description: Usuario creado exitosamente
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 200
-                      message:
-                        type: string
-                        example: Autenticado y creado correctamente
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 1
-                      email:
-                        type: string
-                        example: user@example.com
-                      type:
-                        type: string
-                        example: Customer
-                      created_at:
-                        type: string
-                        format: date-time
-                      updated_at:
-                        type: string
-                        format: date-time
+                $ref: '#/components/schemas/user_auth_response'
         '422':
           description: Error de validación
           content:
@@ -347,122 +105,6 @@ paths:
                   error:
                     type: string
                     example: Demasiadas peticiones
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                user:
-                  type: object
-                  properties:
-                    email:
-                      type: string
-                      example: user@example.com
-                    password:
-                      type: string
-                      example: password
-                    password_confirmation:
-                      type: string
-                      example: password
-                      x-nullable: true
-                    type:
-                      type: string
-                      example: User
-                      x-nullable: true
-                      description: Puede ser User o Admin
-                  required:
-                  - email
-                  - password
-              required:
-              - user
-  "/login":
-    post:
-      summary: Iniciar sesión de usuario
-      tags:
-      - Authentication
-      description: Autenticación de usuario con email y password. Retorna un token
-        JWT en el header Authorization.
-      parameters: []
-      responses:
-        '200':
-          description: Login exitoso
-          headers:
-            Authorization:
-              type: string
-              description: Bearer token JWT para autenticación en futuras peticiones.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 200
-                      message:
-                        type: string
-                        example: Logueado exitosamente
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 1
-                      email:
-                        type: string
-                        example: user@example.com
-                      type:
-                        type: string
-                        example: User
-                      created_at:
-                        type: string
-                        format: date-time
-                      updated_at:
-                        type: string
-                        format: date-time
-        '401':
-          description: Credenciales inválidas
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Invalid Email or password.
-        '429':
-          description: Demasiadas peticiones
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Demasiadas peticiones
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                user:
-                  type: object
-                  properties:
-                    email:
-                      type: string
-                      example: admin@example.com
-                    password:
-                      type: string
-                      example: password
-                  required:
-                  - email
-                  - password
-              required:
-              - user
   "/logout":
     delete:
       summary: Cerrar sesión de usuario
@@ -498,34 +140,648 @@ paths:
                   message:
                     type: string
                     example: No se pudo encontrar una sesión activa.
+  "/api/v1/user/current_user":
+    get:
+      summary: Obtener datos del usuario autenticado
+      tags:
+      - User
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_response'
+        '401':
+          description: unauthorized
+  "/api/v1/analytics/most_purchased_products_by_category":
+    get:
+      summary: Productos más comprados por categoría
+      tags:
+      - Analytics
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Un objeto donde cada clave es el nombre de una categoría.
+                additionalProperties:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 101
+                    name:
+                      type: string
+                      example: Producto X
+                    total_quantity_sold:
+                      type: integer
+                      example: 150
+        '401':
+          description: unauthorized
+  "/api/v1/analytics/top_revenue_products_by_category":
+    get:
+      summary: Top 3 productos con más ingresos por categoría
+      tags:
+      - Analytics
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Un objeto donde cada clave es el nombre de una categoría
+                  y el valor es un array con los 3 productos top.
+                additionalProperties:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 102
+                      name:
+                        type: string
+                        example: Producto Z
+                      total_revenue:
+                        type: number
+                        format: float
+                        example: 1500.5
+        '401':
+          description: unauthorized
+  "/api/v1/analytics/purchases_list":
+    get:
+      summary: Listado de compras con filtros
+      tags:
+      - Analytics
+      security:
+      - Bearer: []
+      parameters:
+      - name: purchase_date_from
+        in: query
+        description: Fecha de inicio (YYYY-MM-DD)
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: purchase_date_to
+        in: query
+        description: Fecha de fin (YYYY-MM-DD)
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: category_id
+        in: query
+        description: ID de la categoría para filtrar productos.
+        required: false
+        schema:
+          type: integer
+      - name: customer_id
+        in: query
+        description: ID del cliente (User).
+        required: false
+        schema:
+          type: integer
+      - name: admin_id
+        in: query
+        description: ID del administrador que creó los productos para filtrar las compras.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: unauthorized
+  "/api/v1/analytics/purchase_counts_by_granularity":
+    get:
+      summary: Conteo de compras agrupadas por tiempo
+      tags:
+      - Analytics
+      security:
+      - Bearer: []
+      parameters:
+      - name: granularity
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - hour
+          - day
+          - week
+          - month
+          - year
+      - name: purchase_date_from
+        in: query
+        format: date
+        required: false
+        schema:
+          type: string
+      - name: purchase_date_to
+        in: query
+        format: date
+        required: false
+        schema:
+          type: string
+      - name: category_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: customer_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: admin_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Un objeto donde cada clave es el período de tiempo formateado
+                  y el valor es el conteo de compras.
+                additionalProperties:
+                  type: integer
+                example:
+                  '2025-07-14': 22
+                  '2025-07-15': 15
+        '400':
+          description: bad_request
+        '401':
+          description: unauthorized
+  "/api/v1/audits/admin_changes":
+    get:
+      summary: Historial de cambios por Administradores
+      tags:
+      - Audits
+      description: Devuelve una lista de cambios agrupados por administrador. Requiere
+        rol de Admin.
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: Historial de cambios obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/admin_audit_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '429':
+          description: Demasiadas peticiones
+  "/api/v1/products":
+    get:
+      summary: Listar todos los productos
+      tags:
+      - Products
+      description: Devuelve un array con todos los productos. Requiere rol de Admin.
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '429':
+          description: Demasiadas peticiones
+    post:
+      summary: Crear un nuevo producto
+      tags:
+      - Products
+      description: Crea un producto. El producto se asocia al usuario autenticado
+        (creador).
+      security:
+      - Bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product_payload'
+      responses:
+        '201':
+          description: Producto creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product_response'
+        '401':
+          description: No autenticado
+        '422':
+          description: Error de validación
+        '429':
+          description: Demasiadas peticiones
+  "/api/v1/products/{id}":
+    get:
+      summary: Obtener un producto por ID
+      tags:
+      - Products
+      description: Requiere rol de Admin.
+      security:
+      - Bearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Datos del producto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '404':
+          description: Producto no encontrado
+        '429':
+          description: Demasiadas peticiones
+    put:
+      summary: Actualizar un producto
+      tags:
+      - Products
+      description: Requiere rol de Admin.
+      security:
+      - Bearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product_payload'
+      responses:
+        '200':
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '404':
+          description: Producto no encontrado
+        '422':
+          description: Error de validación
+        '429':
+          description: Demasiadas peticiones
+    delete:
+      summary: Eliminar un producto
+      tags:
+      - Products
+      description: Requiere rol de Admin. No se puede eliminar si tiene compras
+        asociadas.
+      security:
+      - Bearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Producto eliminado
+        '401':
+          description: No autenticado o sin rol de Admin
+        '404':
+          description: Producto no encontrado
+        '422':
+          description: No se puede eliminar el producto
+        '429':
+          description: Demasiadas peticiones
+  "/api/v1/categories":
+    get:
+      summary: Listar todas las categorías
+      tags:
+      - Categories
+      description: Devuelve un array con todas las categorías. Requiere rol de Admin.
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/category_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '429':
+          description: Demasiadas peticiones
+    post:
+      summary: Crear una nueva categoría
+      tags:
+      - Categories
+      description: Requiere rol de Admin.
+      security:
+      - Bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/category_payload'
+      responses:
+        '201':
+          description: Categoría creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/category_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '422':
+          description: Error de validación
+        '429':
+          description: Demasiadas peticiones
+  "/api/v1/categories/{id}":
+    get:
+      summary: Obtener una categoría por ID
+      tags:
+      - Categories
+      description: Requiere rol de Admin.
+      security:
+      - Bearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Datos de la categoría
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/category_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '404':
+          description: Categoría no encontrada
+        '429':
+          description: Demasiadas peticiones
+    put:
+      summary: Actualizar una categoría
+      tags:
+      - Categories
+      description: Requiere rol de Admin.
+      security:
+      - Bearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/category_payload'
+      responses:
+        '200':
+          description: Categoría actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/category_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '404':
+          description: Categoría no encontrada
+        '422':
+          description: Error de validación
+        '429':
+          description: Demasiadas peticiones
+    delete:
+      summary: Eliminar una categoría
+      tags:
+      - Categories
+      description: Requiere rol de Admin. No se puede eliminar si tiene productos
+        asociados.
+      security:
+      - Bearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Categoría eliminada
+        '401':
+          description: No autenticado o sin rol de Admin
+        '404':
+          description: Categoría no encontrada
+        '422':
+          description: No se puede eliminar la categoría
+        '429':
+          description: Demasiadas peticiones
+  "/api/v1/customers":
+    get:
+      summary: Listar todos los clientes
+      tags:
+      - Customers
+      description: Devuelve un array con todos los clientes. Requiere rol de Admin.
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/customer_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '429':
+          description: Demasiadas peticiones
+    post:
+      summary: Crear un nuevo cliente
+      tags:
+      - Customers
+      description: Requiere rol de Admin.
+      security:
+      - Bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer_payload'
+      responses:
+        '201':
+          description: Cliente creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '422':
+          description: Error de validación
+        '429':
+          description: Demasiadas peticiones
+  "/api/v1/customers/{id}":
+    get:
+      summary: Obtener un cliente por ID
+      tags:
+      - Customers
+      description: Requiere rol de Admin.
+      security:
+      - Bearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Datos del cliente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '404':
+          description: Cliente no encontrado
+        '429':
+          description: Demasiadas peticiones
+    put:
+      summary: Actualizar un cliente
+      tags:
+      - Customers
+      description: Requiere rol de Admin.
+      security:
+      - Bearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer_payload'
+      responses:
+        '200':
+          description: Cliente actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer_response'
+        '401':
+          description: No autenticado o sin rol de Admin
+        '404':
+          description: Cliente no encontrado
+        '422':
+          description: Error de validación
+        '429':
+          description: Demasiadas peticiones
+    delete:
+      summary: Eliminar un cliente
+      tags:
+      - Customers
+      description: Requiere rol de Admin. No se puede eliminar si tiene compras
+        asociadas.
+      security:
+      - Bearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Cliente eliminado
+        '401':
+          description: No autenticado o sin rol de Admin
+        '404':
+          description: Cliente no encontrado
+        '422':
+          description: No se puede eliminar el cliente
+        '429':
+          description: Demasiadas peticiones
 servers:
-- url: https://{defaultHost}
-# - url: http://{defaultHost}
+# - url: https://{defaultHost}
+- url: http://{defaultHost}
   variables:
     defaultHost:
-      default: rubicon-prog.online
-      # default: localhost:3000
+      # default: rubicon-prog.online
+      default: localhost:3000
 components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Ingresa el token JWT con el prefijo Bearer. Ejemplo: "Bearer
+        {tu_token}"'
   schemas:
-    user_response:
+    user_login_payload:
       type: object
       properties:
-        id:
-          type: integer
-        email:
-          type: string
-        type:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
+        user:
+          type: object
+          properties:
+            email:
+              type: string
+              example: admin@example.com
+            password:
+              type: string
+              example: password
+          required:
+          - email
+          - password
       required:
-      - id
-      - email
-      - type
+      - user
     user_signup_payload:
       type: object
       properties:
@@ -548,29 +804,173 @@ components:
           required:
           - email
           - password
-          - password_confirmation
       required:
       - user
-    user_login_payload:
+    user_response:
       type: object
       properties:
-        user:
+        id:
+          type: integer
+        email:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    user_auth_response:
+      type: object
+      properties:
+        status:
           type: object
           properties:
+            code:
+              type: integer
+              example: 200
+            message:
+              type: string
+        data:
+          $ref: '#/components/schemas/user_response'
+    admin_audit_response:
+      type: object
+      properties:
+        admin_user:
+          type: object
+          properties:
+            id:
+              type: integer
             email:
               type: string
-              example: admin@example.com
-            password:
+        changes:
+          type: array
+          items:
+            type: object
+            properties:
+              event_id:
+                type: integer
+              event_type:
+                type: string
+              resource_type:
+                type: string
+              resource_id:
+                type: integer
+              old_values:
+                type: object
+              new_values:
+                type: object
+              changed_at:
+                type: string
+                format: date-time
+    product_response:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: float
+        stock:
+          type: integer
+        barcode:
+          type: string
+        brand:
+          type: string
+        model:
+          type: string
+        status:
+          type: string
+    product_payload:
+      type: object
+      properties:
+        product:
+          type: object
+          properties:
+            name:
               type: string
-              example: password
-          required:
-          - email
-          - password
-      required:
-      - user
-  securitySchemes:
-    Bearer:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: 'Ingresa el token JWT con el prefijo Bearer. Ejemplo: "Bearer {tu_token}"'
+            description:
+              type: string
+            price:
+              type: number
+              format: float
+            stock:
+              type: integer
+            barcode:
+              type: string
+            brand:
+              type: string
+            model:
+              type: string
+            status:
+              type: string
+              enum: [active, inactive, discontinued]
+    category_response:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+    category_payload:
+      type: object
+      properties:
+        category:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            status:
+              type: string
+    customer_response:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        registration_date:
+          type: string
+          format: date
+        status:
+          type: string
+    customer_payload:
+      type: object
+      properties:
+        customer:
+          type: object
+          properties:
+            name:
+              type: string
+            surname:
+              type: string
+            email:
+              type: string
+            phone:
+              type: string
+            address:
+              type: string
+            registration_date:
+              type: string
+              format: date
+            status:
+              type: string

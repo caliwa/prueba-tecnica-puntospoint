@@ -17,6 +17,13 @@ class Api::V1::AnalyticsController < ApplicationController
         "SUM(purchase_items.quantity) AS total_quantity"
       )
 
+    # products_sold.each do |product|
+    #   puts "Categoría: #{product.category_name}"
+    #   puts "Producto: #{product.product_name}"
+    #   puts "Cantidad vendida: #{product.total_quantity}"
+    #   puts "-----"
+    # end
+
     # 2. Usamos `group_by` de Ruby para agrupar los resultados en un hash por categoría.
     # El resultado es: { "Categoría A" => [producto1, producto2], "Categoría B" => [producto3] }
     grouped_by_category = products_sold.group_by(&:category_name)
@@ -72,82 +79,83 @@ class Api::V1::AnalyticsController < ApplicationController
   end
 
 
-# app/controllers/api/v1/analytics_controller.rb
-def purchases_list
-  # --- PASO 1: CONSTRUIR LA CONSULTA PARA ENCONTRAR LOS IDs ---
-  # Construimos una consulta con todos los joins necesarios solo para filtrar.
-  # No nos preocupamos por cargar datos aquí, solo por encontrar las compras correctas.
-  purchases_query = Purchase.distinct
+  # app/controllers/api/v1/analytics_controller.rb
+  # c. Obtener listado de compras según parámetros
+  def purchases_list
+    # --- PASO 1: CONSTRUIR LA CONSULTA PARA ENCONTRAR LOS IDs ---
+    # Construimos una consulta con todos los joins necesarios solo para filtrar.
+    # No nos preocupamos por cargar datos aquí, solo por encontrar las compras correctas.
+    purchases_query = Purchase.distinct
 
-  # Filtro por Categoría
-  if params[:category_id].present?
-    purchases_query = purchases_query.joins(products: :categories)
-                                     .where(categories: { id: params[:category_id] })
+    # Filtro por Categoría
+    if params[:category_id].present?
+      purchases_query = purchases_query.joins(products: :categories)
+                                      .where(categories: { id: params[:category_id] })
+    end
+
+    #Filtro por Administrador
+    if params[:admin_id].present?
+      purchases_query = purchases_query.joins(products: :creator)
+                          .where(
+                            products: { created_by_user_id: params[:admin_id] },
+                            users:    { type: 'Admin' }
+                          )
+    end
+
+    # Filtros directos
+    if params[:purchase_date_from].present?
+      purchases_query = purchases_query.where("purchases.purchase_date >= ?", params[:purchase_date_from])
+    end
+    if params[:purchase_date_to].present?
+      purchases_query = purchases_query.where("purchases.purchase_date <= ?", params[:purchase_date_to])
+    end
+    if params[:customer_id].present?
+      purchases_query = purchases_query.where(customer_id: params[:customer_id])
+    end
+
+    # --- PASO 2: EJECUTAR LA CONSULTA Y LUEGO CARGAR LOS DATOS ---
+    # Ejecuta la consulta compleja para obtener solo los IDs.
+    purchase_ids = purchases_query.pluck(:id)
+
+    if purchase_ids.empty?
+      render json: [], status: :ok
+      return
+    end
+
+    # Inicia una consulta NUEVA y LIMPIA, sin joins, usando los IDs.
+    # El .preload aquí funcionará perfectamente porque no hay conflictos.
+    final_purchases = Purchase.where(id: purchase_ids)
+                              .preload(:customer, purchase_items: { product: :images })
+                              .order(purchase_date: :desc)
+
+    # render json: purchases_query, status: :ok
+    # return
+    # --- PASO 3: CONSTRUIR EL JSON ---
+    render json: final_purchases.map { |purchase|
+      {
+        id: purchase.id,
+        customer_name: purchase.customer&.full_name,
+        purchase_date: purchase.purchase_date,
+        total: purchase.total_amount.to_f,
+        status: purchase.status,
+        items: purchase.purchase_items.map do |item|
+          next if item.product.nil?
+          {
+            product_name: item.product.name,
+            quantity: item.quantity,
+            total_price: item.total_price.to_f,
+            images: item.product.images.map(&:image_url)
+          }
+        end.compact
+      }
+    }, status: :ok
   end
-
-  # Filtro por Administrador
-  if params[:admin_id].present?
-    purchases_query = purchases_query.joins(:products)
-                                     .where(products: { created_by_user_id: params[:admin_id] })
-  end
-
-  # Filtros directos
-  if params[:purchase_date_from].present?
-    purchases_query = purchases_query.where("purchases.purchase_date >= ?", params[:purchase_date_from])
-  end
-  if params[:purchase_date_to].present?
-    purchases_query = purchases_query.where("purchases.purchase_date <= ?", params[:purchase_date_to])
-  end
-  if params[:customer_id].present?
-    purchases_query = purchases_query.where(customer_id: params[:customer_id])
-  end
-
-  # --- PASO 2: EJECUTAR LA CONSULTA Y LUEGO CARGAR LOS DATOS ---
-  # Ejecuta la consulta compleja para obtener solo los IDs.
-  purchase_ids = purchases_query.pluck(:id)
-
-  if purchase_ids.empty?
-    render json: [], status: :ok
-    return
-  end
-
-  # Inicia una consulta NUEVA y LIMPIA, sin joins, usando los IDs.
-  # El .preload aquí funcionará perfectamente porque no hay conflictos.
-  final_purchases = Purchase.where(id: purchase_ids)
-                            .preload(:customer, purchase_items: { product: :images })
-                            .order(purchase_date: :desc)
-
-  # --- PASO 3: CONSTRUIR EL JSON (AHORA SÍ, SIN N+1) ---
-  render json: final_purchases.map { |purchase|
-    {
-      id: purchase.id,
-      customer_name: purchase.customer&.full_name,
-      purchase_date: purchase.purchase_date,
-      # total: purchase.total_amount.to_f, # Corregido según tu schema anterior
-      status: purchase.status,
-      items: purchase.purchase_items.map do |item|
-        next if item.product.nil?
-        {
-          product_name: item.product.name,
-          quantity: item.quantity,
-          total_price: item.total_price.to_f,
-          images: item.product.images.map(&:image_url)
-        }
-      end.compact
-    }
-  }, status: :ok
-end
-
-
-
-
-
 
 
   # d. Obtener cantidad de compras según granularidad
   # GET /api/v1/analytics/purchase_counts_by_granularity
   # d. Obtener cantidad de compras según granularidad.
-  # Parámetros: purchase_date_from, purchase_date_to, category_id, customer_id, granularity (hour, day, week, year).
+  # Parámetros: purchase_date_from, purchase_date_to, category_id, customer_id, admin_id, granularity (hour, day, week, year).
 
   def purchase_counts_by_granularity
     # Validar parámetro de granularidad
@@ -178,11 +186,19 @@ end
       purchases = purchases.where(customer_id: params[:customer_id])
     end
 
+    #Filtro por Administrador
+    if params[:admin_id].present?
+      purchases = purchases.joins(products: :creator)
+                          .where(
+                            products: { created_by_user_id: params[:admin_id] },
+                            users:    { type: 'Admin' }
+                          )
+    end
+
     # Filtrar por category_id si está presente y si se trata de productos
     if params[:category_id].present?
-      purchases = purchases.joins(purchase_items: { purchasable: { categorizations: :category } })
-                          .where(purchase_items: { purchasable_type: "Product" })
-                          .where(categories: { id: params[:category_id] }).distinct
+      purchases = purchases.joins(products: :categories)
+                          .where(categories: { id: params[:category_id] })
     end
 
     # Agrupar por granularidad, utilizando funciones de fecha

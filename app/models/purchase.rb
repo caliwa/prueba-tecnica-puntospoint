@@ -16,6 +16,10 @@ class Purchase < ApplicationRecord
   scope :by_date_range, ->(start_date, end_date) { where(purchase_date: start_date..end_date) }
   scope :by_payment_method, ->(method) { where(payment_method: method) }
 
+  def total_amount
+    self.total
+  end
+
   def add_product(product, quantity, unit_price = nil, discount: 0, tax: 0)
     unit_price ||= product.price
 
