@@ -71,7 +71,7 @@ config.swagger_docs = {
               user: {
                 type: :object,
                 properties: {
-                  email: { type: :string, example: 'admin@example.com' },
+                  email: { type: :string, example: 'carlos_gonzalez82201@elpoli.edu.co' },
                   password: { type: :string, example: 'password123' }
                 },
                 required: %w[email password]
