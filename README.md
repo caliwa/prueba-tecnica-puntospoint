@@ -12,7 +12,7 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno de desarr
 
 ### Prerrequisitos
 
-Antes de comenzar, asegúrate de que los siguientes servicios estén instalados y corriendo en tu sistema:
+Antes de comenzar, asegúrate de que los siguientes servicios estén instalados y corriendo en tu sistema (RECOMENDADO USAR FLYENV PARA AMBIENTE FULLSTACK, MULTIPLATAFORMA):
 
 - **PostgreSQL**: Como motor de base de datos.
 - **Redis**: Como servidor para la gestión de trabajos en segundo plano con Sidekiq.
@@ -25,7 +25,7 @@ cd <NOMBRE_DEL_PROYECTO>
 bundle install
 2. Configuración del Entorno
 a. Variables de Entorno (Recomendación)
-Para gestionar claves secretas (como la RAILS_MASTER_KEY) en desarrollo de una manera que simule la producción, se recomienda utilizar una herramienta para cargar archivos .env. Una buena opción es Fly.io Env.
+Para gestionar claves secretas (como la RAILS_MASTER_KEY) en desarrollo de una manera que simule la producción, se recomienda utilizar una herramienta para cargar archivos .env.
 
 b. Credenciales para Gmail
 Este comando abrirá el archivo de credenciales encriptado. Se recomienda usar VS Code para una mejor experiencia.
