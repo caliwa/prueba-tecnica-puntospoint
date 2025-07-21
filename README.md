@@ -6,6 +6,8 @@
 
 [![](https://i.ibb.co/q3YcsWjV/puntospointdiagrama.jpg)](https://i.ibb.co/q3YcsWjV/puntospointdiagrama.jpg)
 
+Link del proyecto desplegado: https://rubicon-prog.online/ 
+
 ## 🚀 Instalación y Puesta en Marcha
 
 Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno de desarrollo local.
@@ -26,8 +28,6 @@ bundle install
 2. Configuración del Entorno
 a. Variables de Entorno (Recomendación)
 Para usar en producción se ha logrado configurar con kamal, un adaptador de contraseña https://kamal-deploy.org/ y un VPS (Ejemplo Digitalocean) para desplegar PostgreSQL y Sidekiq, realizando un flujo CI/CD
-
-Link del proyecto desplegado: https://rubicon-prog.online/ 
 
 b. Credenciales para Gmail
 El siguiente comando abrirá el archivo de credenciales encriptado. Solo funciona para VSCode
