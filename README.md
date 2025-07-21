@@ -2,6 +2,10 @@
 
 ## Descripción del proyecto
 
+### · Diagrama de entidad relación de los modelos
+
+[![](https://i.ibb.co/q3YcsWjV/puntospointdiagrama.jpg)](https://i.ibb.co/q3YcsWjV/puntospointdiagrama.jpg)
+
 ## 🚀 Instalación y Puesta en Marcha
 
 Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno de desarrollo local.
