@@ -11,12 +11,12 @@ Customer.destroy_all
 User.destroy_all
 
 puts "Creando usuarios..."
-admin_user = Admin.find_or_create_by!(email: "admin@example.com") do |user|
+admin_user = Admin.find_or_create_by!(email: "carlos_gonzalez82201@elpoli.edu.co") do |user|
   user.password = "password"
   user.password_confirmation = "password"
 end
 
-regular_user = User.find_or_create_by!(email: "user@example.com") do |user|
+regular_user = User.find_or_create_by!(email: "frutaradelicias@gmail.com") do |user|
   user.password = "password"
   user.password_confirmation = "password"
 end
