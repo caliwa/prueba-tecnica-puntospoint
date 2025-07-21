@@ -25,14 +25,16 @@ cd <NOMBRE_DEL_PROYECTO>
 bundle install
 2. Configuración del Entorno
 a. Variables de Entorno (Recomendación)
-Para gestionar claves secretas (como la RAILS_MASTER_KEY) en desarrollo de una manera que simule la producción, se recomienda utilizar una herramienta para cargar archivos .env.
+Para usar en producción se ha logrado configurar con kamal, un adaptador de contraseña https://kamal-deploy.org/ y un VPS (Ejemplo Digitalocean) para desplegar PostgreSQL y Sidekiq, realizando un flujo CI/CD
+
+Link del proyecto desplegado: https://rubicon-prog.online/ 
 
 b. Credenciales para Gmail
-Este comando abrirá el archivo de credenciales encriptado. Se recomienda usar VS Code para una mejor experiencia.
+El siguiente comando abrirá el archivo de credenciales encriptado. Solo funciona para VSCode
 
 bash
 EDITOR="code --wait" bin/rails credentials:edit
-Dentro del archivo, pega la siguiente estructura y complétala con un usuario de Gmail válido y una contraseña de aplicación (no la contraseña normal de la cuenta).
+Dentro del archivo, pega la siguiente estructura y complétala con un usuario de Gmail válido y una contraseña de aplicación (para SMTP).
 
 yaml
 gmail:
@@ -49,8 +51,11 @@ development:
   database: puntospoint_development
   user: tu_usuario_de_postgres
   password: tu_contraseña_de_postgres
+
+Por lo general para este motor de base de datos el usuario es root y la contraseña vacia
+
 3. Preparar la Base de Datos
-Este comando asegura que la base de datos esté en un estado limpio, aplica todas las migraciones y la puebla con datos iniciales.
+Este comando asegura que la base de datos esté en un estado limpio, aplica todas las migraciones y se le asigna datos iniciales.
 
 bash
 bundle exec rails db:rollback STEP=99 db:migrate db:seed
