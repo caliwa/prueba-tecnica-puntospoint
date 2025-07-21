@@ -7,6 +7,7 @@
 [![](https://i.ibb.co/q3YcsWjV/puntospointdiagrama.jpg)](https://i.ibb.co/q3YcsWjV/puntospointdiagrama.jpg)
 
 Link del proyecto desplegado: https://rubicon-prog.online/ 
+Contraseña: puntospoint
 
 ## 🚀 Instalación y Puesta en Marcha
 
