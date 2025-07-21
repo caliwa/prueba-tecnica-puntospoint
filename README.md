@@ -12,7 +12,7 @@ Contraseña: puntospoint
 
 ## 🚀 Instalación y Puesta en Marcha
 
-Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno de desarrollo local.
+Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno de desarrollo local. (Versión de Ruby 3.3.4 - Versión de Rails 7.2.2.1)
 
 ### Prerrequisitos
 
