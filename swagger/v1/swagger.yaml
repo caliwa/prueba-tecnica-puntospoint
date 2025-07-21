@@ -750,12 +750,12 @@ paths:
         '429':
           description: Demasiadas peticiones
 servers:
-- url: https://{defaultHost}
-# - url: http://{defaultHost}
+# - url: https://{defaultHost}
+- url: http://{defaultHost}
   variables:
     defaultHost:
-      default: rubicon-prog.online
-      # default: localhost:3000
+      # default: rubicon-prog.online
+      default: localhost:3000
 components:
   securitySchemes:
     Bearer:
