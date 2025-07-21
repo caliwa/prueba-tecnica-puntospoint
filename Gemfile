@@ -81,4 +81,5 @@ gem "rails-observers"
 gem "kaminari"
 
 
+gem 'sidekiq-cron', '~> 1.10'
 gem "sidekiq", "~> 8.0"

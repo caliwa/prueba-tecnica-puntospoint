@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  <style>
+    body { font-family: sans-serif; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #dddddd; text-align: left; padding: 8px; }
+    th { background-color: #f2f2f2; }
+    h1 { color: #333; }
+  </style>
+</head>
+<body>
+  <h1>Reporte de Ventas - <%= @report_date.strftime('%A, %d de %B de %Y') %></h1>
+  <p>Este es el resumen de las ventas de productos realizadas el día de ayer.</p>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad Vendida</th>
+        <th>Ingresos Totales</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @report_data.each do |sale| %>
+        <tr>
+          <td><%= sale.name %></td>
+          <td><%= sale.total_quantity %></td>
+          <td><%= number_to_currency(sale.total_revenue) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <p>Este es un correo generado automáticamente.</p>
+</body>
+</html>
