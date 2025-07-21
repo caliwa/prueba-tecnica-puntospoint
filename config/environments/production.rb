@@ -85,17 +85,17 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.default_url_options = {
-    protocol: 'https',
-    host: 'rubicon-prog.online'
+    protocol: "https",
+    host: "rubicon-prog.online"
   }
 
   config.action_mailer.smtp_settings = {
-    address:              'smtp.gmail.com',
+    address:              "smtp.gmail.com",
     port:                 587,
-    domain:               'gmail.com',
+    domain:               "gmail.com",
     user_name:            Rails.application.credentials.dig(:gmail, :user_name),
     password:             Rails.application.credentials.dig(:gmail, :app_password),
-    authentication:       'plain',
+    authentication:       "plain",
     enable_starttls_auto: true
   }
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

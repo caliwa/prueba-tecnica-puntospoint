@@ -1,7 +1,6 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
-
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   # Settings specified here will take precedence over those in config/application.rb.
@@ -42,12 +41,12 @@ Rails.application.configure do
 
   # Disable caching for Action Mailer templates even if Action Controller
   config.action_mailer.smtp_settings = {
-    address:              'smtp.gmail.com',
+    address:              "smtp.gmail.com",
     port:                 587,
-    domain:               'gmail.com',
+    domain:               "gmail.com",
     user_name:            Rails.application.credentials.dig(:gmail, :user_name),
     password:             Rails.application.credentials.dig(:gmail, :app_password),
-    authentication:       'plain',
+    authentication:       "plain",
     enable_starttls_auto: true
   }
   # caching is enabled.
