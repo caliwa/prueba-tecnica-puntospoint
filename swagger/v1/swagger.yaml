@@ -773,7 +773,7 @@ components:
           properties:
             email:
               type: string
-              example: admin@example.com
+              example: carlos_gonzalez82201@elpoli.edu.co
             password:
               type: string
               example: password

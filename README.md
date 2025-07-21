@@ -5,6 +5,7 @@
 ### · Diagrama de entidad relación de los modelos
 
 [![](https://i.ibb.co/q3YcsWjV/puntospointdiagrama.jpg)](https://i.ibb.co/q3YcsWjV/puntospointdiagrama.jpg)
+[![](https://i.ibb.co/xq0MpXkr/rswag.png)](https://i.ibb.co/xq0MpXkr/rswag.png)
 
 Link del proyecto desplegado: https://rubicon-prog.online/ 
 Contraseña: puntospoint
