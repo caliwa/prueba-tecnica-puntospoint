@@ -1,19 +1,21 @@
-Prueba Técnica Puntospoint - Carlos González
-Descripción del proyecto.
+# Prueba Técnica Puntospoint - Carlos González
 
-🚀 Instalación y Puesta en Marcha
+## Descripción del proyecto
+
+## 🚀 Instalación y Puesta en Marcha
+
 Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno de desarrollo local.
 
-Prerrequisitos
+### Prerrequisitos
+
 Antes de comenzar, asegúrate de que los siguientes servicios estén instalados y corriendo en tu sistema:
 
-PostgreSQL: Como motor de base de datos.
+- **PostgreSQL**: Como motor de base de datos.
+- **Redis**: Como servidor para la gestión de trabajos en segundo plano con Sidekiq.
 
-Redis: Como servidor para la gestión de trabajos en segundo plano con Sidekiq.
+### 1. Clonar e Instalar Dependencias
 
-1. Clonar e Instalar Dependencias
-Bash
-
+```bash
 git clone <URL_DEL_REPOSITORIO>
 cd <NOMBRE_DEL_PROYECTO>
 bundle install
@@ -24,13 +26,11 @@ Para gestionar claves secretas (como la RAILS_MASTER_KEY) en desarrollo de una m
 b. Credenciales para Gmail
 Este comando abrirá el archivo de credenciales encriptado. Se recomienda usar VS Code para una mejor experiencia.
 
-Bash
-
+bash
 EDITOR="code --wait" bin/rails credentials:edit
 Dentro del archivo, pega la siguiente estructura y complétala con un usuario de Gmail válido y una contraseña de aplicación (no la contraseña normal de la cuenta).
 
-YAML
-
+yaml
 gmail:
   user_name: "ESPACIO PARA USUARIO VALIDO"
   app_password: "CLAVE DE APLICACIÓN"
@@ -39,8 +39,7 @@ Guarda y cierra el archivo en tu editor para que Rails encripte los cambios.
 c. Base de Datos (PostgreSQL)
 Abre el archivo config/database.yml. En la sección development, asegúrate de que la configuración coincida con tu servidor PostgreSQL local.
 
-YAML
-
+yaml
 development:
   # ...
   database: puntospoint_development
@@ -49,8 +48,7 @@ development:
 3. Preparar la Base de Datos
 Este comando asegura que la base de datos esté en un estado limpio, aplica todas las migraciones y la puebla con datos iniciales.
 
-Bash
-
+bash
 bundle exec rails db:rollback STEP=99 db:migrate db:seed
 4. Ejecutar el Proyecto
 Necesitarás tener dos terminales abiertas para correr los procesos principales.
@@ -58,14 +56,12 @@ Necesitarás tener dos terminales abiertas para correr los procesos principales.
 Terminal 1: Iniciar Sidekiq
 Sidekiq maneja los trabajos en segundo plano, como el envío de correos.
 
-Bash
-
+bash
 bundle exec sidekiq
 Terminal 2: Iniciar el Servidor de Rails
 Este es el servidor principal de la aplicación.
 
-Bash
-
+bash
 rails s
 ¡Y listo! Ahora puedes acceder a la aplicación desde tu navegador en http://localhost:3000.
 
@@ -73,21 +69,20 @@ rails s
 Para probar los endpoints de la API, puedes importar la siguiente colección directamente en Postman.
 
 Instrucciones de Importación
-Abre tu aplicación de Postman.
+Abre tu aplicación de Postman
 
-Haz clic en el botón Import, ubicado en la esquina superior izquierda.
+Haz clic en el botón Import, ubicado en la esquina superior izquierda
 
-Selecciona la pestaña Raw text.
+Selecciona la pestaña Raw text
 
-Copia y pega todo el contenido del bloque JSON de abajo.
+Copia y pega todo el contenido del bloque JSON de abajo
 
-Haz clic en Continue y luego en Import.
+Haz clic en Continue y luego en Import
 
 La colección ya está configurada para usar variables y guardar automáticamente el token de autenticación después de hacer login.
 
 Colección para Postman
-JSON
-
+json
 {
   "info": {
     "_postman_id": "c4a7b8e0-1a2b-3c4d-5e6f-7a8b9c0d1e2f",
@@ -122,7 +117,7 @@ JSON
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user\": {\n    \"email\": \"carlos_gonzalez82201@elpoli.edu\",\n    \"password\": \"password\"\n  }\n}",
+              "raw": "{\n  \"user\": {\n    \"email\": \"carlos_gonzalez82201@elpoli.edu.co\",\n    \"password\": \"password\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
