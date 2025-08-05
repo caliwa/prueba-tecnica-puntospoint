@@ -82,7 +82,7 @@ class Api::V1::AnalyticsController < ApplicationController
   # app/controllers/api/v1/analytics_controller.rb
   # c. Obtener listado de compras según parámetros
   def purchases_list
-    cache_key = [ "analytics/purchases_list", params.permit(:category_id, :admin_id, :purchase_date_from, :purchase_date_to, :customer_id).to_h ]
+    cache_key = [ "analytics/purchases_list", params.permit(:category_id, :admin_id, :purchase_date_from, :purchase_date_to, :customer_id, :page).to_h ]
     result = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
       # --- PASO 1: CONSTRUIR LA CONSULTA PARA ENCONTRAR LOS IDs ---
       # Construimos una consulta con todos los joins necesarios solo para filtrar.
@@ -117,7 +117,7 @@ class Api::V1::AnalyticsController < ApplicationController
 
       # --- PASO 2: EJECUTAR LA CONSULTA Y LUEGO CARGAR LOS DATOS ---
       # Ejecuta la consulta compleja para obtener solo los IDs.
-      purchase_ids = purchases_query.pluck(:id)
+      purchase_ids = purchases_query.page(params[:page]).per(2).pluck(:id)
 
       next [] if purchase_ids.empty?
 
