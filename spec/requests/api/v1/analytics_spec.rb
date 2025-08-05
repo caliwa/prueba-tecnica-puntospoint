@@ -65,9 +65,24 @@ RSpec.describe "Api::V1::AnalyticsController", type: :request do
 
   describe "GET /api/v1/analytics/purchases_list" do
     context "cuando el usuario es un administrador" do
-      it "devuelve todas las compras sin filtros" do
-        get "/api/v1/analytics/purchases_list", headers: auth_headers_for(admin)
-        expect(json.size).to eq(3)
+      context "cuando no se aplican filtros (prueba de paginación)" do
+        it "devuelve la primera página de compras (2 por página)" do
+          get "/api/v1/analytics/purchases_list", params: { page: 1 }, headers: auth_headers_for(admin)
+          expect(response).to have_http_status(:success)
+          expect(json.size).to eq(2)
+        end
+
+        it "devuelve la segunda página con la compra restante" do
+          get "/api/v1/analytics/purchases_list", params: { page: 2 }, headers: auth_headers_for(admin)
+          expect(response).to have_http_status(:success)
+          expect(json.size).to eq(1)
+        end
+
+        it "devuelve una lista vacía si la página excede el total de registros" do
+          get "/api/v1/analytics/purchases_list", params: { page: 3 }, headers: auth_headers_for(admin)
+          expect(response).to have_http_status(:success)
+          expect(json).to be_empty
+        end
       end
 
       it "filtra por customer_id" do
