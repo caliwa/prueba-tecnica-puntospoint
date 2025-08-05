@@ -1,11 +1,14 @@
 class Api::V1::AnalyticsController < ApplicationController
-  rate_limit to: 10, within: 30.seconds, with: -> { render json: { error: "Demasiadas peticiones" }, status: 429 }, store: cache_store
+  rate_limit to: 10, within: 30.seconds, only: :most_purchased_products_by_category, with: -> { render json: { error: "Demasiadas peticiones" }, status: 429 }, store: cache_store
+  rate_limit to: 10, within: 30.seconds, only: :top_revenue_products_by_category, with: -> { render json: { error: "Demasiadas peticiones" }, status: 429 }, store: cache_store
+  rate_limit to: 5, within: 30.seconds, only: :purchases_list, with: -> { render json: { error: "Demasiadas peticiones" }, status: 429 }, store: cache_store
+  rate_limit to: 5, within: 30.seconds, only: :purchase_counts_by_granularity, with: -> { render json: { error: "Demasiadas peticiones" }, status: 429 }, store: cache_store
   before_action :authenticate_user!
   before_action :authorize_admin!
 
   # a. Obtener el Producto más comprado por cada categoría
   def most_purchased_products_by_category
-    result = Rails.cache.fetch("analytics/most_purchased_by_category", expires_in: 1.hour) do
+    result = Rails.cache.fetch("analytics/most_purchased_by_category", expires_in: 15.minutes) do
       # 1. Obtenemos una lista plana de todos los productos vendidos con sus totales,
       # agrupados por categoría. Esta es una única y eficiente consulta a la BD.
       products_sold = Product
@@ -40,7 +43,7 @@ class Api::V1::AnalyticsController < ApplicationController
 
   # b. Obtener los 3 Productos que más han recaudado ($) por categoría
   def top_revenue_products_by_category
-    result = Rails.cache.fetch("analytics/top_revenue_by_category", expires_in: 1.hour) do
+    result = Rails.cache.fetch("analytics/top_revenue_by_category", expires_in: 15.minutes) do
       # 1. Similar al anterior, obtenemos una lista plana de productos y su recaudación.
       # Usamos el alias `calculated_revenue` para evitar colisiones.
       products_revenue = Product
@@ -80,7 +83,7 @@ class Api::V1::AnalyticsController < ApplicationController
   # c. Obtener listado de compras según parámetros
   def purchases_list
     cache_key = [ "analytics/purchases_list", params.permit(:category_id, :admin_id, :purchase_date_from, :purchase_date_to, :customer_id).to_h ]
-    result = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+    result = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
       # --- PASO 1: CONSTRUIR LA CONSULTA PARA ENCONTRAR LOS IDs ---
       # Construimos una consulta con todos los joins necesarios solo para filtrar.
       # No nos preocupamos por cargar datos aquí, solo por encontrar las compras correctas.
@@ -167,7 +170,7 @@ class Api::V1::AnalyticsController < ApplicationController
     end
 
     cache_key = [ "analytics/purchase_counts", params.permit(:category_id, :admin_id, :purchase_date_from, :purchase_date_to, :customer_id, :granularity).to_h ]
-    result = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+    result = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
       # Obtener todas las compras
       purchases = Purchase.all
 
