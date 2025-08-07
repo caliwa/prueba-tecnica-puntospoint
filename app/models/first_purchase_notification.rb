@@ -4,5 +4,4 @@ class FirstPurchaseNotification < ApplicationRecord
   validates :product, presence: true
 
   validates :product_id, uniqueness: true
-
 end

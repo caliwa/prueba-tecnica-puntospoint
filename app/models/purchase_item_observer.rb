@@ -15,6 +15,5 @@ class PurchaseItemObserver < ActiveRecord::Observer
     rescue ActiveRecord::RecordNotUnique
       # Ya se procesó por otro thread
     end
-
   end
 end
