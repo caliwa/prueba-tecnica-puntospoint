@@ -13,6 +13,8 @@ class Product < ApplicationRecord
   # Un producto puede ser un "imageable" y tener muchas imágenes.
   has_many :images, as: :imageable, dependent: :destroy
 
+  has_one :first_purchase_notification, dependent: :destroy
+
 
   validates :name, presence: true
   validates :price, presence: true, numericality: { greater_than: 0 }
