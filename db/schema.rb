@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_13_231541) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_07_034219) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -77,6 +77,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_13_231541) do
     t.index ["previous_refresh_token"], name: "index_devise_api_tokens_on_previous_refresh_token"
     t.index ["refresh_token"], name: "index_devise_api_tokens_on_refresh_token"
     t.index ["resource_owner_type", "resource_owner_id"], name: "index_devise_api_tokens_on_resource_owner"
+  end
+
+  create_table "first_purchase_notifications", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_first_purchase_notifications_on_product_id", unique: true
   end
 
   create_table "images", force: :cascade do |t|
@@ -160,6 +167,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_13_231541) do
 
   add_foreign_key "audit_events", "users"
   add_foreign_key "categorizations", "categories"
+  add_foreign_key "first_purchase_notifications", "products"
   add_foreign_key "products", "users", column: "created_by_user_id"
   add_foreign_key "purchase_items", "purchases"
   add_foreign_key "purchases", "customers"

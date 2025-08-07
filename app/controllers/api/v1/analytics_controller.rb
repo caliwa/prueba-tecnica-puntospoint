@@ -6,33 +6,39 @@ class Api::V1::AnalyticsController < ApplicationController
   before_action :authenticate_user!
   before_action :authorize_admin!
 
-  # a. Obtener el Producto más comprado por cada categoría
+  # a. Obtener el Producto más comprado por cada categoría (VERSIÓN ESCALABLE)
   def most_purchased_products_by_category
     result = Rails.cache.fetch("analytics/most_purchased_by_category", expires_in: 15.minutes) do
-      # 1. Obtenemos una lista plana de todos los productos vendidos con sus totales,
-      # agrupados por categoría. Esta es una única y eficiente consulta a la BD.
-      products_sold = Product
-        .joins(:purchase_items, :categories)
-        .group("categories.name", "products.id")
-        .select(
-          "categories.name AS category_name",
-          "products.id AS product_id",
-          "products.name AS product_name",
-          "SUM(purchase_items.quantity) AS total_quantity"
+      query = <<-SQL
+        WITH ranked_products AS (
+          SELECT
+            c.name AS category_name,
+            p.id AS product_id,
+            p.name AS product_name,
+            SUM(pi.quantity) AS total_quantity,
+            ROW_NUMBER() OVER (PARTITION BY c.name ORDER BY SUM(pi.quantity) DESC) as rn
+          FROM products p
+          JOIN purchase_items pi ON p.id = pi.purchasable_id AND pi.purchasable_type =
+          'Product'
+          JOIN categorizations cat ON p.id = cat.categorizable_id AND
+          cat.categorizable_type = 'Product'
+          JOIN categories c ON cat.category_id = c.id
+          GROUP BY c.name, p.id, p.name
         )
+          SELECT category_name, product_id, product_name, total_quantity
+          FROM ranked_products
+          WHERE rn = 1
+      SQL
 
-      # 2. Usamos `group_by` de Ruby para agrupar los resultados en un hash por categoría.
-      # El resultado es: { "Categoría A" => [producto1, producto2], "Categoría B" => [producto3] }
-      grouped_by_category = products_sold.group_by(&:category_name)
+      # Ejecutamos la consulta SQL pura y obtenemos un array de hashes.
+      top_products = ActiveRecord::Base.connection.select_all(query)
 
-      # 3. Usamos `transform_values` para iterar sobre cada lista de productos y encontrar
-      # el que tiene la mayor cantidad vendida usando `max_by`.
-      grouped_by_category.transform_values do |products|
-        top_product = products.max_by(&:total_quantity)
-        {
-          id: top_product.product_id,
-          name: top_product.product_name,
-          total_quantity_sold: top_product.total_quantity.to_i
+      # Transformamos el resultado (que ya es pequeño) al formato JSON deseado.
+      top_products.each_with_object({}) do |product, hash|
+        hash[product["category_name"]] = {
+          id: product["product_id"],
+          name: product["product_name"],
+          total_quantity_sold: product["total_quantity"].to_i
         }
       end
     end
@@ -40,36 +46,38 @@ class Api::V1::AnalyticsController < ApplicationController
     render json: result, status: :ok
   end
 
-
-  # b. Obtener los 3 Productos que más han recaudado ($) por categoría
+  # b. Obtener los 3 Productos que más han recaudado ($) por categoría (VERSIÓN ESCALABLE)
   def top_revenue_products_by_category
     result = Rails.cache.fetch("analytics/top_revenue_by_category", expires_in: 15.minutes) do
-      # 1. Similar al anterior, obtenemos una lista plana de productos y su recaudación.
-      # Usamos el alias `calculated_revenue` para evitar colisiones.
-      products_revenue = Product
-        .joins(:purchase_items, :categories)
-        .group("categories.name", "products.id")
-        .select(
-          "categories.name AS category_name",
-          "products.id AS product_id",
-          "products.name AS product_name",
-          "SUM(purchase_items.total_price) AS calculated_revenue"
+      query = <<-SQL
+        WITH ranked_products AS (
+          SELECT
+            c.name AS category_name,
+            p.id AS product_id,
+            p.name AS product_name,
+            SUM(pi.total_price) AS total_revenue,
+            ROW_NUMBER() OVER (PARTITION BY c.name ORDER BY SUM(pi.total_price) DESC)
+          as rn
+          FROM products p
+          JOIN purchase_items pi ON p.id = pi.purchasable_id AND pi.purchasable_type =
+          'Product'
+          JOIN categorizations cat ON p.id = cat.categorizable_id AND
+          cat.categorizable_type = 'Product'
+          JOIN categories c ON cat.category_id = c.id
+          GROUP BY c.name, p.id, p.name
         )
+        SELECT category_name, product_id, product_name, total_revenue FROM ranked_products WHERE rn <= 3
+      SQL
 
-      # 2. Agrupamos los resultados por nombre de categoría.
-      grouped_by_category = products_revenue.group_by(&:category_name)
+      top_products = ActiveRecord::Base.connection.select_all(query)
 
-      # 3. Transformamos los valores: para cada lista de productos, la ordenamos
-      # por recaudación (de mayor a menor) y tomamos los 3 primeros con `first(3)`.
-      grouped_by_category.transform_values do |products|
-        top_3_products = products.sort_by(&:calculated_revenue).reverse.first(3)
-
-        # Mapeamos el resultado para darle el formato de salida deseado.
-        top_3_products.map do |product|
+      # Agrupamos por categoría y luego mapeamos los 3 productos de cada una.
+      top_products.group_by { |p| p["category_name"] }.transform_values do |products|
+        products.map do |product|
           {
-            id: product.product_id,
-            name: product.product_name,
-            total_revenue: product.calculated_revenue.to_f
+            id: product["product_id"],
+            name: product["product_name"],
+            total_revenue: product["total_revenue"].to_f
           }
         end
       end
@@ -77,7 +85,6 @@ class Api::V1::AnalyticsController < ApplicationController
 
     render json: result, status: :ok
   end
-
 
   # app/controllers/api/v1/analytics_controller.rb
   # c. Obtener listado de compras según parámetros
